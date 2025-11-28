@@ -69,18 +69,18 @@ const confirmPassword = ref("");
 
 async function handleRegister() {
   console.log("register:", name.value, email.value, password.value);
-//   const payload = {
-//     name : name.value , 
-//     email : email.value , 
-//     password : password.value ,
-//   }
-//   try{
-//   const reponse = await axios.post('http://localhost:7000/api/auth/register' , payload )
-//     console.log('data', response.data);
-//     alert("Registration successful!");
-//   }catch(e){
-//     console.log(e)
-//   }
+  // const payload = {
+  //   name : name.value , 
+  //   email : email.value , 
+  //   password : password.value ,
+  // }
+  // try{
+  // const reponse = await axios.post('http://localhost:7000/api/auth/register' , payload )
+  //   console.log('data', response.data);
+  //   alert("Registration successful!");
+  // }catch(e){
+  //   console.log(e)
+  // }
 
 
 }
