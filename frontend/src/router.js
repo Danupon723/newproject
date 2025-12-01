@@ -6,7 +6,7 @@ import AdminLayout from "./layouts/AdminLayout.vue"
 import adminDashboard from "../src/view/admin/dashbard.vue"
 import adminusers from "../src/view/admin/users.vue"
 import topic from './view/admin/topic.vue'
-
+import edittopic from './manage/edittopic.vue'
 import dashbord from './view/user/dashbord.vue'
 import userlayout from './layouts/userlayout.vue'
 import Assessorlayout from './layouts/Assessorlayout.vue'
