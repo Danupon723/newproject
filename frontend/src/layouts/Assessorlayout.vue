@@ -4,22 +4,23 @@
 
     <!-- Navbar -->
     <v-app-bar app color="primary" dark>
-      <v-toolbar-title>ยินดีต้อนรับ เเอดมิน</v-toolbar-title> <v-btn color="red" class="d-flex justify-center mt-4" @click="logout">ออกจากระบบ</v-btn>
+      <v-toolbar-title>ยินดีต้อนรับ ผู้ประเมิน </v-toolbar-title>
+      
     </v-app-bar>
     <!-- Sidebar -->
     <v-navigation-drawer app permanent>
       <v-list>
         <v-list-item link to="/admin/dashboard">
-          <v-list-item-title>แดชบอร์ด</v-list-item-title>
+          <v-list-item-title>Dashboard</v-list-item-title>
         </v-list-item>
         <v-list-item link to="/admin/users">
-          <v-list-item-title>ตารางเเสดงชื่อผู้ใช้</v-list-item-title>
+          <v-list-item-title>Users</v-list-item-title>
         </v-list-item>
         <v-list-item link to="/admin/topic">
-          <v-list-item-title>หัวข้อการประเมินหลัก</v-list-item-title>
+          <v-list-item-title>topic</v-list-item-title>
         </v-list-item>
-        <v-list-item link to="/admin/Subtopic">
-          <v-list-item-title>หัวข้อการประเมินย่อย </v-list-item-title>
+        <v-list-item @click="logout()" >
+          <v-list-item-title >logout</v-list-item-title>
         </v-list-item>
         <!-- เพิ่มลิงก์อื่น ๆ -->
       </v-list>

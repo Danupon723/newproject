@@ -6,40 +6,43 @@
       </v-card-title>
 
   <v-form>
-    <v-text-field
-      label="Full Name"
-      v-model="name"
-      variant="outlined"
-      class="mb-3"
-      prepend-inner-icon="mdi-account"
-    />
 
     <v-text-field
-      label="Email"
+      label="อีเมล"
       v-model="email"
       type="email"
       variant="outlined"
       class="mb-3"
       prepend-inner-icon="mdi-email"
     />
-
     <v-text-field
-      label="Password"
+      label="รหัสผ่าน"
       v-model="password"
       type="password"
       variant="outlined"
       class="mb-3"
       prepend-inner-icon="mdi-lock"
     />
-
-    <v-text-field
-      label="Confirm Password"
-      v-model="confirmPassword"
-      type="password"
+      <v-text-field
+      label="ชื่อผู้ใช้"
+      v-model="name"
       variant="outlined"
       class="mb-3"
-      prepend-inner-icon="mdi-lock-check"
+      prepend-inner-icon="mdi-account"
     />
+    <v-select
+      v-model="department_id"
+      :items="department"
+      label="เเผนก"
+      variant="outlined"
+    ></v-select>
+    <v-select
+      v-model="group_id"
+      :items="group"
+      label="กลุ่ม"
+      variant="outlined"
+    ></v-select>
+    
 
     <v-btn
       color="primary"
@@ -61,26 +64,52 @@
 <script setup>
 import { ref } from "vue";
 import axios  from "axios";
+import { useRouter } from "vue-router";
 
-const name = ref("");
+const router = useRouter()
+
 const email = ref("");
 const password = ref("");
-const confirmPassword = ref("");
+const name = ref("");
+const department_id = ref("")
+const group_id = ref("")
+
+ const department = [
+    'เทคโนโลยีสาระสนเทศ',
+    'ช่างยนต์',
+    'ไฟฟ้า',
+    'คอมธุรกิจ',
+    'ไฟฟ้ากำลัง',
+  ]
+
+   const group = [
+    'เทคโนโลยีสาระสนเทศ',
+    'ช่างยนต์',
+    'ไฟฟ้า',
+    'คอมธุรกิจ',
+    'ไฟฟ้ากำลัง',
+  ]
 
 async function handleRegister() {
-  console.log("register:", name.value, email.value, password.value);
-  // const payload = {
-  //   name : name.value , 
-  //   email : email.value , 
-  //   password : password.value ,
-  // }
-  // try{
-  // const reponse = await axios.post('http://localhost:7000/api/auth/register' , payload )
-  //   console.log('data', response.data);
-  //   alert("Registration successful!");
-  // }catch(e){
-  //   console.log(e)
-  // }
+  console.log("register:", name.value, email.value, password.value,department_id.value , group_id.value);
+  const pay = {
+    name : name.value,
+    email : email.value,
+    password : password.value,
+    department_id : department_id.value,
+    group_id : group_id.value,
+  }
+  try{
+    const respone = await axios.post('http://localhost:7000/api/auth/register' , pay)
+    console.log(respone.data);
+    if (respone.data.success){
+      router.push('/')
+    }else{
+      alert('ไม่สำเร็จ')
+    }
+  }catch(e){
+    console.log(e)
+  }
 
 
 }

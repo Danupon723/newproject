@@ -51,14 +51,10 @@
             icon
             color="red"
             size="small"
-            class="mr-3"
             @click="deleteUser(item)"
           >
             <v-icon>mdi-delete</v-icon>
           </v-btn>
-          <span></span>
-         <router-link to="addevalua"><v-btn color="primary" class="mr-3">เพิ่มผู้ประเมิน</v-btn></router-link> 
-
         </template>
       </v-data-table>
     </v-card>
@@ -96,7 +92,7 @@ const users = ref([
 
 // ✅ ฟังก์ชันแก้ไข
 const editUser = (user) => {
-  router.push('edituser')
+  router.push('edit')
 }
 
 // ✅ ฟังก์ชันลบ
