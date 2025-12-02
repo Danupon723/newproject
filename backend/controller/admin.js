@@ -5,7 +5,7 @@ const bcrypt = require('bcrypt')
 // เเสดงข้อมูล ผู้ใช้บัญชีทั้งหมด
 exports.userlist = async (req, res, next) => {
   try {
-    const user = await conn('users').select("*")
+    const user = await conn('users').select("*").orderBy("id" , "desc")
     res.json(user)
   } catch (e) {
     next(e)
@@ -72,4 +72,14 @@ exports.group = async (req,res,next)=>{
     }catch(e){
         next(e)
     }
+}
+
+
+exports.periodslist = async (req,res,next)=>{
+  try{
+       const preiod = await conn('evaluation_periods').select("*")
+    res.json(preiod)
+  }catch(e){
+    next(e)
+  }
 }
