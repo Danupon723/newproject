@@ -66,10 +66,13 @@
 </template>
 
 <script setup>
+import axios from 'axios'
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
+const users = ref([])
+
 
 // ✅ ตรวจ token กันหลุดเข้า admin
 onMounted(() => {
@@ -87,12 +90,21 @@ const headers = [
   { title: 'จัดการ', key: 'actions', sortable: false }
 ]
 
-// ✅ ข้อมูลตัวอย่าง
-const users = ref([
-  { name: 'สมชาย', email: 'somchai@gmail.com', status: 'active' },
-  { name: 'สมหญิง', email: 'somying@gmail.com', status: 'active' },
-  { name: 'อดิศร', email: 'adisorn@gmail.com', status: 'inactive' }
-])
+//ฟังชั้นเรียกข้อมูลจากฐานข้อมูล
+
+const  loaddata = async() => {
+  try{
+    const res = await axios.get('http://localhost:7000/api/admin/userlist')
+    console.log('success' , res.data)
+    
+    users.value = res
+  }catch(e){
+    console.log(e)
+  }
+}
+
+
+
 
 // ✅ ฟังก์ชันแก้ไข
 const editUser = (user) => {

@@ -2,7 +2,7 @@
   <v-container class="mt-6" style="max-width: 600px;">
     <v-card class="pa-6">
 
-      <h2 class="text-h5 mb-4">เพิ่มผู้ใช้</h2>
+      <h2 class="text-h5 mb-4">เเก้ไขข้อมูลผู้ใช้</h2>
 
       <v-form @submit.prevent="saveTopic">
           <v-text-field
