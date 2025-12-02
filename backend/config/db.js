@@ -7,7 +7,7 @@ const conn = knex({
         host  : process.env.DB_HOST || '127.0.0.1' , 
         user :process.env.DB_USER || 'root' , 
         password:process.env.DB_PASS || '' , 
-        database:process.env.DB_NAME || 'skills_db' , 
+        database:process.env.DB_NAME || 'newcreateskill_db' , 
         port:process.env.DB_PORT || 3306 , 
         connectTimeout:1500
     },

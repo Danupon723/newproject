@@ -4,7 +4,7 @@ const bcrypt = require('bcrypt')
 //เเสดงข้อมูลเเผนกทั้งหมด
 exports.department = async (req , res  , next) =>{
     try{
-        const dept = await conn('department').select('*')
+        const dept = await conn('departments').select('*')
         res.json(dept)
         
     }catch(e){

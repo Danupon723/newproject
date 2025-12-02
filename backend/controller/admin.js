@@ -57,7 +57,7 @@ exports.edituser = async (req, res, next) => {
 
 exports.department = async (req , res  , next) =>{
     try{
-        const dept = await conn('department').select('*')
+        const dept = await conn('departments').select('*')
         res.json(dept)
         
     }catch(e){
