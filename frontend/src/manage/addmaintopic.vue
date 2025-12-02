@@ -13,7 +13,7 @@
           required
         />
         <v-text-field
-          v-model="form.title"
+          v-model="form.name"
           label="คำอธิบายหัวข้อการประเมิน"
           variant="outlined"
           required
@@ -41,20 +41,6 @@
           variant="outlined"
           required
         />
-         <v-select
-        v-model="evidence_id"
-        :items="evidence"
-         label="หลักฐานที่ใช้เเนบ"
-         variant="outlined"
-         ></v-select>
-         <v-select
-        v-model="Score_id"
-        :items="Score"
-         label="เลือกรูปเเบบการประเมิน"
-         variant="outlined"
-         ></v-select>
-
-         <v-file-input label="File input"></v-file-input>
         <!-- ปุ่มบันทึก -->
         <v-btn
           type="submit"

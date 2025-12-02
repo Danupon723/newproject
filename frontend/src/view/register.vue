@@ -33,12 +33,16 @@
     <v-select
       v-model="department_id"
       :items="department"
+      item-title="name"
+      item-value="id"
       label="เเผนก"
       variant="outlined"
     ></v-select>
     <v-select
       v-model="group_id"
       :items="group"
+      item-title="name"
+      item-value="id"
       label="กลุ่ม"
       variant="outlined"
     ></v-select>
@@ -62,7 +66,7 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { onMounted, ref } from "vue";
 import axios  from "axios";
 import { useRouter } from "vue-router";
 
@@ -71,24 +75,24 @@ const router = useRouter()
 const email = ref("");
 const password = ref("");
 const name = ref("");
-const department_id = ref("")
-const group_id = ref("")
+const department_id = ref([])
+const group_id = ref([])
 
- const department = [
-    'เทคโนโลยีสาระสนเทศ',
-    'ช่างยนต์',
-    'ไฟฟ้า',
-    'คอมธุรกิจ',
-    'ไฟฟ้ากำลัง',
-  ]
+const department = ref([])
+const group = ref([])
 
-   const group = [
-    'เทคโนโลยีสาระสนเทศ',
-    'ช่างยนต์',
-    'ไฟฟ้า',
-    'คอมธุรกิจ',
-    'ไฟฟ้ากำลัง',
-  ]
+  async function loaddata() {
+    try{
+      const loaddata = await axios.get('http://localhost:7000/api/auth/dept')
+      console.log(loaddata.data)
+      department.value = loaddata.data
+      const loadgroup = await axios.get('http://localhost:7000/api/auth/grop')
+      console.log(loadgroup.data)
+      group.value = loadgroup.data
+    }catch(e){
+      console.log(e)
+    }
+  }
 
 async function handleRegister() {
   console.log("register:", name.value, email.value, password.value,department_id.value , group_id.value);
@@ -113,4 +117,9 @@ async function handleRegister() {
 
 
 }
+
+
+onMounted(()=>{
+  loaddata()
+})
 </script>

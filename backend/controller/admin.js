@@ -54,3 +54,22 @@ exports.edituser = async (req, res, next) => {
     next(e)
   }
 }
+
+exports.department = async (req , res  , next) =>{
+    try{
+        const dept = await conn('department').select('*')
+        res.json(dept)
+        
+    }catch(e){
+        next(e)
+    }
+}
+//เเสดงข้อมูลฝ่ายทั้งหมด
+exports.group = async (req,res,next)=>{
+    try{
+        const group = await conn('org_groups').select("*")
+        res.json(group)
+    }catch(e){
+        next(e)
+    }
+}

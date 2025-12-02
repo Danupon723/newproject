@@ -1,11 +1,12 @@
 <template>
-  <v-container class="mt-6" style="max-width: 600px;">
-    <v-card class="pa-6">
+  <v-container class="fill-height d-flex justify-center align-center">
+    <v-card width="450" class="pa-6">
+      <v-card-title class="text-h5 text-center mb-4">
+        📝 เพิ่มข้อมูลผู้ใช้
+      </v-card-title>
 
-      <h2 class="text-h5 mb-4">เพิ่มผู้ใช้</h2>
+  <v-form>
 
-      <v-form @submit.prevent="saveTopic">
-      
     <v-text-field
       label="อีเมล"
       v-model="email"
@@ -32,101 +33,92 @@
     <v-select
       v-model="department_id"
       :items="department"
+        item-title="name"
+         item-value="id"
       label="เเผนก"
       variant="outlined"
     ></v-select>
     <v-select
       v-model="group_id"
       :items="group"
+        item-title="name"
+        item-value="id"
       label="กลุ่ม"
       variant="outlined"
     ></v-select>
+    
 
-        <!-- ปุ่มบันทึก -->
-        <v-btn
-          type="submit"
-          color="primary"
-          class="mt-4"
-          block
-        >
-          เพิ่มผู้ใช้
-        </v-btn>
+    <v-btn
+      color="primary"
+      block
+      @click="handleRegister"
+    >
+      เพิ่มผู้ใช้
+    </v-btn>
+  </v-form>
+</v-card>
 
-        <!-- ปุ่มย้อนกลับ -->
-        <v-btn
-          class="mt-2"
-          color="grey"
-          block
-          @click="router.back()"
-        >
-          ย้อนกลับ
-        </v-btn>
-      </v-form>
-
-    </v-card>
   </v-container>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
-import axios from 'axios'
+import { ref , onMounted } from "vue";
+import axios  from "axios";
+import { useRouter } from "vue-router";
 
-const route = useRoute()
 const router = useRouter()
 
-// ✅ รับ id จาก URL เช่น /admin/topics/5/edit
-const topicId = route.params.id
+const email = ref("");
+const password = ref("");
+const name = ref("");
+const department_id = ref("")
+const group_id = ref("")
 
-// ✅ ฟอร์มข้อมูลหัวข้อ
-const form = ref({
-  title: '',
-  score: ''
-})
+ const department = ref([])
 
+   const group = ref([])
 
-const department = [
-    'เทคโนโลยีสาระสนเทศ',
-    'ช่างยนต์',
-    'ไฟฟ้า',
-    'คอมธุรกิจ',
-    'ไฟฟ้ากำลัง',
-  ]
+  
 
-   const group = [
-    'เทคโนโลยีสาระสนเทศ',
-    'ช่างยนต์',
-    'ไฟฟ้า',
-    'คอมธุรกิจ',
-    'ไฟฟ้ากำลัง',
-  ]
-
-
-// ✅ โหลดข้อมูลหัวข้อเดิมมาแสดง
-onMounted(async () => {
-  try {
-    const res = await axios.get(`http://localhost:7000/api/topics/${topicId}`)
-
-    // ✅ กรณี API ส่งกลับ { status: true, data: {...} }
-    form.value = res.data.data
-
-  } catch (err) {
-    console.error('โหลดหัวข้อไม่สำเร็จ:', err)
-  }
-})
-
-// ✅ บันทึกการแก้ไข
-const saveTopic = async () => {
-  try {
-    await axios.put(
-      `http://localhost:7000/api/topics/${topicId}`,
-      form.value
-    )
-
-    alert('บันทึกการแก้ไขสำเร็จ')
-    router.push('/admin/topics') // ✅ กลับไปหน้ารายการหัวข้อ
-  } catch (err) {
-    console.error('บันทึกไม่สำเร็จ:', err)
-  }
+async function loaddata() {
+    try{
+        const loaddata = await axios.get('http://localhost:7000/api/admin/dept')
+        console.log(loaddata)
+      department.value = loaddata.data
+        const loadgruop = await axios.get('http://localhost:7000/api/admin/grop')
+        console.log(loadgruop.data)
+        group.value = loadgruop.data
+    }catch(e){
+        console.log(e)
+    }
 }
+
+async function handleRegister() {
+  console.log("register:", name.value, email.value, password.value,department_id.value , group_id.value);
+  const pay = {
+    name : name.value,
+    email : email.value,
+    password : password.value,
+    department_id : department_id.value,
+    group_id : group_id.value,
+  }
+  try{
+    const respone = await axios.post('http://localhost:7000/api/auth/register' , pay)
+    console.log(respone.data);
+    if (respone.data.success){
+      router.push('users')
+    }else{
+      alert('ไม่สำเร็จ')
+    }
+  }catch(e){
+    console.log(e)
+  }
+
+
+}
+
+
+onMounted( ()=>{
+  loaddata()
+})
 </script>
