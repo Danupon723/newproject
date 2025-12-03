@@ -12,7 +12,7 @@
       <template #top>
         <v-toolbar flat>
           <v-toolbar-title>รายชื่อผู้ใช้งาน</v-toolbar-title>
-        <v-btn icon @click="adduser">
+        <v-btn icon color="primary" @click="adduser">
         <v-icon>mdi-pencil</v-icon>
         </v-btn>
         </v-toolbar>

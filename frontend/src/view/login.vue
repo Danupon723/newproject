@@ -74,9 +74,9 @@ const payload = {
             if(res.role === 'admin'){
             router.push('/admin');
           }if(res.role === 'evaluator'){  
-          router.push('/user');
-          }if(res.role === 'evaluayee'){
-            router.push('/Assessor')
+          router.push('/Assessor');
+          }if(res.role === 'evaluatee'){
+            router.push('/user')
           }
     }else{
       alert('ไม่พบ')

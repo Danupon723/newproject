@@ -10,7 +10,7 @@
         <template #top>
           <v-toolbar flat>
             <v-toolbar-title>รายการหัวข้อการประเมินย่อย</v-toolbar-title>
-            <router-link to="addtopic"><v-btn color="primary" >เพิ่มหัวข้อประเมินย่อย</v-btn></router-link>
+            <router-link to="addsubtopic"><v-btn color="primary" >เพิ่มหัวข้อประเมินย่อย</v-btn></router-link>
           </v-toolbar>
         </template>
 
