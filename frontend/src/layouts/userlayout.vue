@@ -13,8 +13,8 @@
         <v-list-item link to="/admin/dashboard">
           <v-list-item-title>Dashboard</v-list-item-title>
         </v-list-item>
-        <v-list-item link to="/admin/users">
-          <v-list-item-title>Users</v-list-item-title>
+        <v-list-item link to="/user/profile">
+          <v-list-item-title>profile</v-list-item-title>
         </v-list-item>
         <v-list-item link to="/admin/topic">
           <v-list-item-title>topic</v-list-item-title>

@@ -11,12 +11,15 @@ import dashbord from './view/user/dashbord.vue'
 import userlayout from './layouts/userlayout.vue'
 import Assessorlayout from './layouts/Assessorlayout.vue'
 import assessordashbord from './view/Assessor/dashbord.vue'
-import Subtopic from './view/admin/subtopic.vue'
+import Subtopic from './view/admin/Subtopic.vue'
 import adduser from './manage/adduser.vue'
 import addmaintopic from './manage/addmaintopic.vue'
 import addtopic from './manage/addtopic.vue'
 import addevalua from './manage/addevalua.vue'
 import edituser from './manage/edituser.vue'
+import addsubtopic from './manage/addsubtopic.vue'
+import profile from './view/user/profile.vue'
+import { components } from 'vuetify/dist/vuetify.js'
 const routes = [
   { path: '/', name : Login,  component: Login },
   { path: '/register',name : Register ,  component: Register } , 
@@ -36,6 +39,7 @@ const routes = [
          {path: "addtopic" , component:addtopic},
          {path:"addevalua" , component:addevalua},
          {path: "edituser" , component:edituser},
+         {path: "addsubtopic" , component:addsubtopic},
     ] , 
      meta: { requiresAuth: true}
   } , 
@@ -46,6 +50,7 @@ const routes = [
     children:[
          { path: '', redirect: '/user/dashboard' },
          { path: "dashboard", component: dashbord },
+         { path: "profile", component: profile },
     ] , 
      meta: { requiresAuth: true}
   } , 

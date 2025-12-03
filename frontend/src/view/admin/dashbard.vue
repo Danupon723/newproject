@@ -28,39 +28,46 @@
 
     <!-- ✅ ตารางพร้อมปุ่มแก้ไข + ลบ -->
     <v-card class="mt-6">
-      <v-card-title>รายชื่อผู้ใช้ล่าสุด</v-card-title>
+<v-data-table
+      :headers="headers"
+      :items="users"
+      :loading="loading"
+      item-key="id"
+      class="elevation-1"
+    >
+      <template #top>
+        <v-toolbar flat>
+          <v-toolbar-title>รายชื่อผู้ใช้งาน</v-toolbar-title>
+        </v-toolbar>
+      </template>
 
-      <v-data-table
-        :headers="headers"
-        :items="users"
-        class="elevation-1"
-      >
-        <!-- ✅ ปุ่มจัดการ -->
-        <template #item.actions="{ item }">
-          <v-btn
-            icon
-            color="warning"
-            size="small"
-            class="me-2"
-            @click="editUser(item)"
-          >
-            <v-icon>mdi-pencil</v-icon>
-          </v-btn>
 
-          <v-btn
-            icon
-            color="red"
-            size="small"
-            class="mr-3"
-            @click="deleteUser(item)"
-          >
-            <v-icon>mdi-delete</v-icon>
-          </v-btn>
-          <span></span>
-         <router-link to="addevalua"><v-btn color="primary" class="mr-3">เพิ่มผู้ประเมิน</v-btn></router-link> 
+      <!-- ✅ สถานะ -->
+      <template #item.active="{ item }">
+        <v-chip
+          :color="item.active === 'ใช้งาน' ? 'green' : 'red'"
+          text-color="white"
+          size="small"
+        >
+          {{ item.active }}
+        </v-chip>
+        
+      </template>
+      <template #item.index="{ index }">
+        {{ index + 1 }}
+      </template>
 
-        </template>
-      </v-data-table>
+      <!-- ✅ ปุ่มจัดการ -->
+      <template #item.actions="{ item }">
+        <v-btn icon @click="editUser(item)">
+          <v-icon>mdi-pencil</v-icon>
+        </v-btn>
+
+        <v-btn icon color="red" @click="deleteUser(item.id)">
+          <v-icon>mdi-delete</v-icon>
+        </v-btn>
+      </template>
+    </v-data-table>
     </v-card>
   </v-container>
 </template>
@@ -84,10 +91,14 @@ onMounted(() => {
 
 // ✅ หัวตาราง (เพิ่มคอลัมน์ "จัดการ")
 const headers = [
-  { title: 'ชื่อ', key: 'name' },
+   { title: 'ลำดับ', key: 'index' },
   { title: 'อีเมล', key: 'email' },
-  { title: 'สถานะ', key: 'status' },
-  { title: 'จัดการ', key: 'actions', sortable: false }
+  { title: 'ชื่อ',  key: 'name' },
+  { title: 'ตำเเหน่ง',  key: 'role' },
+  { title: 'แผนก',  key: 'department_id' },
+  { title: 'กลุ่ม',  key: 'group_id' },
+  { title: 'สถานะ',  key: 'active' },
+  { title: 'จัดการ',  key: 'actions', sortable: false }
 ]
 
 //ฟังชั้นเรียกข้อมูลจากฐานข้อมูล
@@ -97,7 +108,7 @@ const  loaddata = async() => {
     const res = await axios.get('http://localhost:7000/api/admin/userlist')
     console.log('success' , res.data)
     
-    users.value = res
+    users.value = res.data
   }catch(e){
     console.log(e)
   }
@@ -117,4 +128,14 @@ const deleteUser = (user) => {
 
   users.value = users.value.filter(u => u !== user)
 }
+
+
+onMounted(() => {
+  const token = localStorage.getItem('token')
+  if (!token) {
+    router.replace('/')
+  }
+
+  loaddata()  // ✅ เรียกฟังก์ชันโหลดข้อมูล
+})
 </script>
