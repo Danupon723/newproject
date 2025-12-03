@@ -7,6 +7,7 @@ router.post('/createuser'   , admincontroller.createuser)
 router.put('/edituser/:id' ,  admincontroller.edituser)
 router.get('/dept' , admincontroller.department)
 router.get('/grop' , admincontroller.group)
+router.get('/indicatorslist' , admincontroller.indicatorslist)
 router.get('/periodslist' , admincontroller.periodslist)
 router.post('/createperiod' , admincontroller.createperiod)
 

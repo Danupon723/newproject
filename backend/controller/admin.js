@@ -99,7 +99,7 @@ exports.createperiod = async (req,res,next)=>{
 }
 
 
-exports.indicators = async (req,res)=>{
+exports.indicatorslist = async (req,res)=>{
   try{
      const indicators = await conn('indicators').select("*")
      res.json(indicators)            
