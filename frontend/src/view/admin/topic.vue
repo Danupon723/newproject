@@ -42,17 +42,21 @@ const form = ref({
 })
 
 const headers = [
-  { text: 'ลำดับ', value: 'id' },
-  { text: 'ชื่อหัวข้อการประเมิน', value: 'title' },
-  { text: 'คะแนนเต็ม', value: 'score' },
-  { text: 'จัดการ', value: 'actions', sortable: false }
+   { title: 'ลำดับ', key: 'id' },
+  { title: 'หัวข้อการประเมิน', key: 'name' },
+  { title: 'ปีที่้เริ่ม',  key: 'buddhist_year' },
+  { title: 'วันที่เริ่ม',  key: 'start_date' },
+  { title: 'วันที่จบ',  key: 'end_date' },
+  { title: 'สถานะ',  key: '	active' },
+  { title: 'จัดการ',  key: 'actions', sortable: false }
 ]
 
 // ✅ ดึงข้อมูลหัวข้อ
 const fetchTopics = async () => {
   loading.value = true
   try {
-    const res = await axios.get('http://localhost:7000/api/topics')
+    const res = await axios.get('http://localhost:7000/api/admin/periodslist')
+    console.log(res.data)
     topics.value = res.data
   } catch (err) {
     console.error(err)

@@ -46,6 +46,12 @@
       label="กลุ่ม"
       variant="outlined"
     ></v-select>
+    <v-select
+      v-model="roles"
+      :items="role"
+      label="ตำเเหน่ง"
+      variant="outlined"
+    ></v-select>
     
 
     <v-btn
@@ -73,9 +79,14 @@ const password = ref("");
 const name = ref("");
 const department_id = ref("")
 const group_id = ref("")
-
+const roles = ref("")
  const department = ref([])
+  const role = [
+    'admin',
+    'evaluatee',
+    'evaluator',
 
+  ]
    const group = ref([])
 
   
@@ -104,7 +115,7 @@ async function handleRegister() {
   }
   try{
     const respone = await axios.post('http://localhost:7000/api/auth/register' , pay)
-    console.log(respone.data);
+    // console.log(respone.data);
     if (respone.data.success){
       router.push('users')
     }else{

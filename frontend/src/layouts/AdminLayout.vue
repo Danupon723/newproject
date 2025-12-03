@@ -4,7 +4,7 @@
 
     <!-- Navbar -->
     <v-app-bar app color="primary" dark>
-      <v-toolbar-title>ยินดีต้อนรับ เเอดมิน</v-toolbar-title> <v-btn color="red" class="d-flex justify-center mt-4" @click="logout">ออกจากระบบ</v-btn>
+      <v-toolbar-title>ยินดีต้อนรับ เเอดมิน</v-toolbar-title> <v-btn color="write" class="d-flex justify-center mt-4" style="background-color: red;" @click="logout">ออกจากระบบ</v-btn>
     </v-app-bar>
     <!-- Sidebar -->
     <v-navigation-drawer app permanent>
