@@ -5,9 +5,9 @@
         <v-card class="mx-auto pa-4" elevation="3">
           <div class="text-center">
             <v-avatar size="100" color="grey-lighten-2" class="elevation-2">
-              <v-img :src="user.avatarUrl" alt="Profile"></v-img>
+              <v-img :src="user.avatarUrl || defaultAvatar" alt="Profile"></v-img>
             </v-avatar>
-            
+
             <div class="text-h6 mt-3">{{ user.name }}</div>
             <div class="text-subtitle-1 text-medium-emphasis">{{ user.role }}</div>
           </div>
@@ -18,29 +18,19 @@
             <v-list-item 
               prepend-icon="mdi-email" 
               :title="user.email" 
-              subtitle="อีเมล"
             ></v-list-item>
             <v-list-item 
-              prepend-icon="mdi-phone" 
-              :title="user.phone" 
-              subtitle="เบอร์โทรศัพท์"
+              :title="user.department || '-'"
             ></v-list-item>
             <v-list-item 
-              prepend-icon="mdi-map-marker" 
-              :title="user.location" 
-              subtitle="ที่ตั้ง"
+              :title="user.location || '-'"
             ></v-list-item>
           </v-list>
 
           <v-divider class="my-4"></v-divider>
 
           <v-card-actions>
-            <v-btn 
-              block 
-              color="primary" 
-              variant="flat"
-              @click="handleEdit"
-            >
+            <v-btn block color="primary" variant="flat" @click="handleEdit">
               แก้ไขข้อมูลส่วนตัว
             </v-btn>
           </v-card-actions>
@@ -51,23 +41,56 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import axios from 'axios';
+import { ref, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
 
-// ข้อมูลจำลองที่ดึงมาจากฐานข้อมูล
+const router = useRouter();
+
+// ข้อมูล user เริ่มต้น
 const user = ref({
-  name: 'สุดใจ มั่นคง',
-  role: 'พนักงานทั่วไป',
-  email: 'sudjai@company.com',
-  phone: '090-000-1111',
-  location: 'กรุงเทพมหานคร',
-  avatarUrl: 'https://i.pravatar.cc/300?img=50'
+  name: '',
+  role: '',
+  email: '',
+  department: '',
+  location: '',
+  avatarUrl: null
 });
 
-// ฟังก์ชันสำหรับปุ่มแก้ไข (สามารถเปลี่ยนเป็นการเปิด Modal ได้)
+// รูป default ถ้า user ไม่มี avatar
+const defaultAvatar = '/images/default-avatar.png'; // เปลี่ยนเป็น path ที่คุณใช้
+
+// ปุ่มแก้ไข
 const handleEdit = () => {
-  alert('เปิดหน้าแก้ไขข้อมูล...');
-  // ในการใช้งานจริง: router.push('/profile/edit') หรือ isEditDialog.value = true
+  router.push('/profile/edit'); // หรือเปิด Dialog แก้ไขข้อมูล
 };
 
+// โหลดข้อมูลผู้ใช้จาก API
+const loadUser = async () => {
+  try {
+    const token = localStorage.getItem('token');
+    const headers = { Authorization: 'Bearer ' + token };
+console.log(token)
+    const res = await axios.get('http://localhost:7000/api/valuatee/profile', { headers });
+    console.log(res.data)
+    // if (res.data && res.data.length > 0) {
+    //   const apiUser = res.data;
+    //   user.value = {
+    //     name: apiUser.name || '',
+    //     role: apiUser.role || '',
+    //     email: apiUser.email || '',
+    //     department: apiUser.department || '',
+    //     location: apiUser.location || '',
+    //     avatarUrl: apiUser.avatarUrl || null
+    //   };
+    // }
+    console.log('โหลดข้อมูลผู้ใช้:', user.value);
+  } catch (err) {
+    console.error('โหลดข้อมูลผู้ใช้ไม่สำเร็จ', err);
+  }
+};
 
+onMounted(() => {
+  loadUser();
+});
 </script>

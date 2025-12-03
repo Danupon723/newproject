@@ -4,7 +4,7 @@
 
     <!-- Navbar -->
     <v-app-bar app color="primary" dark>
-      <v-toolbar-title>ยินดีต้อนรับ ผู้ใช้งาน</v-toolbar-title>
+      <v-toolbar-title>ยินดีต้อนรับ {{user}}</v-toolbar-title>
       
     </v-app-bar>
     <!-- Sidebar -->
@@ -33,13 +33,32 @@
 </template>
 
 <script setup>
-import {useRouter} from 'vue-router' ; 
-const router = useRouter()
+import { ref, onMounted } from 'vue'
+import axios from 'axios'
+
+
 // ไม่มี state พิเศษตอนนี้ 
 function logout(){
   localStorage.removeItem('token')
   router.replace('/') 
 }
 
+const user = ref([]) // เปลี่ยนจาก [] เป็น {}
+
+async function loaddata() {
+  try {
+    const res = await axios.get('http://localhost:7000/api/evaluatee/profile')
+    if (res.data && res.data.length > 0) {
+      user.value = res.data[0] // เอาผู้ใช้คนแรก
+    }
+    console.log('โหลดข้อมูลสำเร็จ:', user.value)
+  } catch (e) {
+    console.log('โหลดข้อมูลไม่สำเร็จ', e)
+  }
+}
+
+onMounted(() => {
+  loaddata()
+})
 
 </script>

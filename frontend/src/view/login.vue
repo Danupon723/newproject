@@ -68,7 +68,6 @@ const payload = {
     const repone = await axios.post('http://localhost:7000/api/auth/login',payload)
     console.log('data' ,repone.data);
     const res = repone.data
-    console.log(localStorage.getItem('token'))
     if(res.success){
       localStorage.setItem('token' , res.token)
             if(res.role === 'admin'){
