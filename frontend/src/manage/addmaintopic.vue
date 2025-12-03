@@ -14,8 +14,9 @@
         />
 
         <v-text-field
-          v-model="form.topic"
-          label="คำอธิบายหัวข้อการประเมิน"
+          v-model="form.yeas"
+          type="number"
+          label="ปีการประเมิน"
           variant="outlined"
           required
         />
@@ -71,7 +72,7 @@ const router = useRouter()
 // ✅ ฟอร์มสำหรับเพิ่มข้อมูลใหม่
 const form = ref({
   main: '',
-  topic: '',
+  yeas: '',
   start: '',
   end: ''
 })
@@ -80,15 +81,15 @@ const form = ref({
 const saveTopic = async () => {
   try {
     console.log(form)
-    // const res = await axios.post(
-    //   'http://localhost:7000/api/admin/periodslist',
-    //   form.value
-    // )
+    const res = await axios.post(
+      'http://localhost:7000/api/admin/createperiod',
+      form.value
+    )
 
     console.log('API RESPONSE:', res.data)
     alert('เพิ่มหัวข้อการประเมินสำเร็จ ✅')
 
-    router.push('/admin/topics') // กลับหน้ารายการ
+    router.push('/admin/topic') // กลับหน้ารายการ
   } catch (err) {
     console.error('เพิ่มข้อมูลไม่สำเร็จ:', err)
 

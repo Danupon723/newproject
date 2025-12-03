@@ -85,12 +85,13 @@ exports.periodslist = async (req,res,next)=>{
 }
 exports.createperiod = async (req,res,next)=>{
   try{
-       const {name , year , start_date , end_date } = req.body
-       const periods = await conn('evaluation_periods').where({name}).first()
+    console.log(req.body)
+       const {main , yeas , start , end } = req.body
+       const periods = await conn('evaluation_periods').where({name : main}).first()
        if(periods) {return res.status(401).json({success:false , message : 'มีหัวข้อนี้เเล้ว'})}
 
 
-       const addperiods = await conn('evaluation_periods').insert({name ,buddhist_year:  year , start_date , end_date})
+       const addperiods = await conn('evaluation_periods').insert({name : main ,buddhist_year:  yeas , start_date : start , end_date : end})
        res.json({success:true , message: 'successfully'})
   }catch(e){
     next(e)
