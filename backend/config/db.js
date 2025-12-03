@@ -14,3 +14,17 @@ const conn = knex({
     pool:{min:0 , max:10 , acquireTimeoutMillis:20000}
 })
 module.exports = conn
+
+//     const headers =  { Authorization: `Bearer ${token}`} 
+
+
+// //   const res = await axios.post('http://localhost:3000/api/profile',payload ,  {headers} )
+//   const res = await axios.get(`http://localhost:3000/api/profile/${userid}` ,  {headers} )
+//   const res = await axios.get(`http://localhost:3000/api/profile/${userid}` ,  
+//     {
+//       headers: { Authorization: "Bearer <token>"
+   
+//   }} )
+  
+       
+    

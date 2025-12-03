@@ -9,6 +9,7 @@ router.get('/dept' , admincontroller.department)
 router.get('/grop' , admincontroller.group)
 router.get('/indicatorslist' , admincontroller.indicatorslist)
 router.get('/periodslist' , admincontroller.periodslist)
+router.get('/assignments' , admincontroller.assignments)
 router.post('/createperiod' , admincontroller.createperiod)
 
 

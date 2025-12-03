@@ -99,10 +99,33 @@ exports.createperiod = async (req,res,next)=>{
 }
 
 
-exports.indicatorslist = async (req,res)=>{
+exports.indicatorslist = async (req,res,next)=>{
   try{
      const indicators = await conn('indicators').select("*")
      res.json(indicators)            
+  }catch(e){
+    next(e)
+  }
+}
+
+
+exports.assignments = async (req,res,next)=>{
+  try{
+    const assignments = await conn('assignments')
+                              .leftJoin('evaluation_periods' , 'assignments.period_id' ,  'evaluation_periods.id')
+                              .leftJoin({evaluator : 'users'}, 'assignments.evaluator_id' , 'evaluator.id')
+                              .leftJoin({evaluatee : 'users'}, 'assignments.evaluatee_id' , 'evaluatee.id')
+                              .leftJoin('departments' , 'assignments.depi_id' , 'departments.id')
+                              .select('assignments.*' ,
+                                      'evaluation_periods.name as period_name' , 
+                                      'evaluator.name as evaluator_name',
+                                      'evaluatee.name as evaluatee_name' , 
+                                      'departments.name as deprmt_name'
+                                      
+                                      )
+
+                    res.json({assignments})
+                              
   }catch(e){
     next(e)
   }

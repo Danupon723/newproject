@@ -4,8 +4,8 @@ const jwt = require('jsonwebtoken')
 module.exports = (...role)=>{
     return (req,res,next)=>{
         try{
-        const header = req.header.authorization || ''
-        const token  = header.startsWith('Bearer') ? header.slice(7) : null
+        const headers = req.headers.authorization || ''
+        const token  = headers.startsWith('Bearer ') ? headers.slice(7) : null
         if(!token){return res.status(401).json({success:false , message:"ไม่มี token"})}
 
         const payload = jwt.verify(token , process.env.SECRETKEY);
