@@ -83,7 +83,7 @@ exports.periodslist = async (req,res,next)=>{
     next(e)
   }
 }
-exports.createperiod = async (req,res,next)=>{
+exports.createperiod = async (req,res,next)=>{    
   try{
        const {name , year , start_date , end_date } = req.body
        const periods = await conn('evaluation_periods').where({name}).first()
