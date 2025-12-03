@@ -12,36 +12,11 @@
       <template #top>
         <v-toolbar flat>
           <v-toolbar-title>รายชื่อผู้ใช้งาน</v-toolbar-title>
-        <v-btn icon @click="openEditDialog(item.raw)">
+        <v-btn icon @click="adduser">
         <v-icon>mdi-pencil</v-icon>
         </v-btn>
         </v-toolbar>
       </template>
-
-      <v-dialog v-model="editDialog" max-width="500">
-  <v-card>
-    <v-card-title>แก้ไขผู้ใช้</v-card-title>
-    <v-card-text>
-      <v-text-field
-        v-model="editUserData.name"
-        label="ชื่อ"
-      />
-      <v-text-field
-        v-model="editUserData.email"
-        label="อีเมล"
-      />
-      <v-select
-        v-model="editUserData.role"
-        :items="['admin','evaluatee']"
-        label="ตำแหน่ง"
-      />
-    </v-card-text>
-    <v-card-actions>
-      <v-btn color="blue" @click="updateUser">บันทึก</v-btn>
-      <v-btn color="grey" @click="editDialog = false">ยกเลิก</v-btn>
-    </v-card-actions>
-  </v-card>
-</v-dialog>
 
 
       <!-- ✅ สถานะ -->
@@ -86,7 +61,7 @@ const loading = ref(false)
 //ตัวเเปรเเก้ไขข้อมูล
 
 const editdialog = ref(false)//ควบคุมการเปิดปิดของ dialog
-const edituser = ref({})// เก็บข้อมูลผู้ใช้ที่เลือก
+const editusers = ref({})// เก็บข้อมูลผู้ใช้ที่เลือก
 
 //ฟังชั้นเปิด dialog 
 const openEditDialog = (user) => {
@@ -136,8 +111,8 @@ const updateUser = async () => {
 }
 
 
-const editUser = (user) => {
-  router.push('#')
+const adduser = (user) => {
+  router.push('adduser')
 }
 
 const deleteUser = async (id) => {

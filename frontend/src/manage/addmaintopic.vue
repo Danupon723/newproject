@@ -7,40 +7,36 @@
       <v-form @submit.prevent="saveTopic">
         <!-- ชื่อหัวข้อ -->
         <v-text-field
-          v-model="form.title"
+          v-model="form.main"
           label="ชื่อหัวข้อการประเมิน"
           variant="outlined"
           required
         />
+
         <v-text-field
-          v-model="form.name"
-          label="คำอธิบายหัวข้อการประเมิน"
+          v-model="form.yeas"
+          type="number"
+          label="ปีการประเมิน"
           variant="outlined"
           required
         />
 
-        <!-- คะแนน -->
         <v-text-field
-          v-model="form.score"
-          label="น้ำหนักคะเนน"
-          type="number"
-          variant="outlined"
-          required
-        />
-        <v-text-field
-          v-model="form.title"
+          v-model="form.start"
           label="กำหนดเวลาเปิด"
           type="date"
           variant="outlined"
           required
         />
+
         <v-text-field
-          v-model="form.title"
+          v-model="form.end"
           label="กำหนดเวลาปิด"
           type="date"
           variant="outlined"
           required
         />
+
         <!-- ปุ่มบันทึก -->
         <v-btn
           type="submit"
@@ -67,47 +63,37 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
 import axios from 'axios'
 
-const route = useRoute()
 const router = useRouter()
 
-// ✅ รับ id จาก URL เช่น /admin/topics/5/edit
-const topicId = route.params.id
-
-// ✅ ฟอร์มข้อมูลหัวข้อ
+// ✅ ฟอร์มสำหรับเพิ่มข้อมูลใหม่
 const form = ref({
-  title: '',
-  score: ''
+  main: '',
+  yeas: '',
+  start: '',
+  end: ''
 })
 
-// ✅ โหลดข้อมูลหัวข้อเดิมมาแสดง
-onMounted(async () => {
-  try {
-    const res = await axios.get(`http://localhost:7000/api/topics/${topicId}`)
-
-    // ✅ กรณี API ส่งกลับ { status: true, data: {...} }
-    form.value = res.data.data
-
-  } catch (err) {
-    console.error('โหลดหัวข้อไม่สำเร็จ:', err)
-  }
-})
-
-// ✅ บันทึกการแก้ไข
+// ✅ ฟังก์ชันเพิ่มข้อมูลลงฐานข้อมูลจริง
 const saveTopic = async () => {
   try {
-    await axios.put(
-      `http://localhost:7000/api/topics/${topicId}`,
+    console.log(form)
+    const res = await axios.post(
+      'http://localhost:7000/api/admin/createperiod',
       form.value
     )
 
-    alert('บันทึกการแก้ไขสำเร็จ')
-    router.push('/admin/topics') // ✅ กลับไปหน้ารายการหัวข้อ
+    console.log('API RESPONSE:', res.data)
+    alert('เพิ่มหัวข้อการประเมินสำเร็จ ✅')
+
+    router.push('/admin/topic') // กลับหน้ารายการ
   } catch (err) {
-    console.error('บันทึกไม่สำเร็จ:', err)
+    console.error('เพิ่มข้อมูลไม่สำเร็จ:', err)
+
+    // alert('เพิ่มข้อมูลไม่สำเร็จ ❌')
   }
 }
 </script>
