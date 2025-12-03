@@ -5,6 +5,7 @@ const bcrypt = require('bcrypt')
 
 exports.profile = async (req,res,next) =>{
     try{
+        console.log(req.user.id)
         const id = req.user.id
         const item  = await conn('users')
                             .leftJoin('departments' , 'users.department_id' ,'departments.id' )

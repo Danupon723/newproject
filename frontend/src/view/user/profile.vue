@@ -70,8 +70,8 @@ const loadUser = async () => {
   try {
     const token = localStorage.getItem('token');
     const headers = { Authorization: 'Bearer ' + token };
-console.log(token)
-    const res = await axios.get('http://localhost:7000/api/valuatee/profile', { headers });
+
+    const res = await axios.get('http://localhost:7000/api/evaluatee/profile', { headers });
     console.log(res.data)
     // if (res.data && res.data.length > 0) {
     //   const apiUser = res.data;
@@ -84,7 +84,7 @@ console.log(token)
     //     avatarUrl: apiUser.avatarUrl || null
     //   };
     // }
-    console.log('โหลดข้อมูลผู้ใช้:', user.value);
+    // console.log('โหลดข้อมูลผู้ใช้:', user.value);
   } catch (err) {
     console.error('โหลดข้อมูลผู้ใช้ไม่สำเร็จ', err);
   }
