@@ -1,5 +1,3 @@
-const error = require('../middlewares/error')
-
 const conn = require('../config/db')
 const bcrypt = require('bcrypt')
 // เเสดงข้อมูล ผู้ใช้บัญชีทั้งหมด

@@ -12,8 +12,10 @@ app.use(express.json())
 
 const authrouter = require('./router/auth')
 const adminrouter = require('./router/admin')
+const evaluateerouter = require('./router/evaluatee')
 app.use('/api/auth' , authrouter)
 app.use('/api/admin' , adminrouter)
+app.use('/api/evaluatee' , evaluateerouter )
 app.use((req,res)=>{
     res.status(404).json({message:"not found"})
 })
