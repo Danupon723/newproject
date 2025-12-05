@@ -97,6 +97,14 @@ exports.createperiod = async (req,res,next)=>{
 }
 
 
+exports.createindicator = async (req,res,next)=>{
+  try{
+      const {} = req.body
+  }catch(e){
+    next(e)
+  }
+}
+
 exports.indicatorslist = async (req,res,next)=>{
   try{
      const indicators = await conn('indicators').select("*")
@@ -128,3 +136,6 @@ exports.assignments = async (req,res,next)=>{
     next(e)
   }
 }
+
+
+exports.itemassignments = async ()
