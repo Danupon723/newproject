@@ -21,6 +21,9 @@
         <v-list-item link to="/admin/Subtopic">
           <v-list-item-title>หัวข้อการประเมินย่อย </v-list-item-title>
         </v-list-item>
+        <v-list-item link to="/admin/evaluatorrole">
+          <v-list-item-title>กำหนดผู้ประเมิน </v-list-item-title>
+        </v-list-item>
         <!-- เพิ่มลิงก์อื่น ๆ -->
       </v-list>
     </v-navigation-drawer>

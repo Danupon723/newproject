@@ -10,7 +10,9 @@ router.get('/grop' , admincontroller.group)
 router.get('/indicatorslist' , admincontroller.indicatorslist)
 router.get('/periodslist' , admincontroller.periodslist)
 router.get('/assignments' , admincontroller.assignments)
+router.get('/itemassignments' , admincontroller.itemassignments)
 router.post('/createperiod' , admincontroller.createperiod)
+router.post('/createassignment' , admincontroller.createassignment)
 
 
 module.exports = router

@@ -1,6 +1,5 @@
 <template>
   <v-container>
-    <h2 class="text-h5 mb-4">Dashboard ผู้ใช้งาน</h2>
 
     <v-data-table
       :headers="headers"
@@ -10,12 +9,10 @@
       class="elevation-1"
     >
       <template #top>
-        <v-toolbar flat>
-          <v-toolbar-title>รายชื่อผู้ใช้งาน</v-toolbar-title>
-        <v-btn icon color="primary" @click="adduser">
-        <v-icon>mdi-pencil</v-icon>
-        </v-btn>
-        </v-toolbar>
+         <v-toolbar flat>
+            <v-toolbar-title>เเสดงรายชื่อผู้ใช้งาน</v-toolbar-title>
+            <router-link to="adduser"><v-btn color="primary" >เพิ่มผู้ใช้งานบัญชี</v-btn></router-link>
+          </v-toolbar>
       </template>
 
 
@@ -75,8 +72,8 @@ const headers = [
   { title: 'อีเมล', key: 'email' },
   { title: 'ชื่อ',  key: 'name' },
   { title: 'ตำเเหน่ง',  key: 'role' },
-  { title: 'แผนก',  key: 'department_id' },
-  { title: 'กลุ่ม',  key: 'group_id' },
+  { title: 'แผนก',  key: 'daprt_name' },
+  { title: 'กลุ่ม',  key: 'group_name' },
   { title: 'สถานะ',  key: 'active' },
   { title: 'จัดการ',  key: 'actions', sortable: false }
 ]

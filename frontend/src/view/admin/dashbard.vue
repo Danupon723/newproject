@@ -79,7 +79,7 @@ import { useRouter } from 'vue-router'
 
 const router = useRouter()
 const users = ref([])
-
+const loading  = ref(false)
 
 // ✅ ตรวจ token กันหลุดเข้า admin
 onMounted(() => {
@@ -95,8 +95,8 @@ const headers = [
   { title: 'อีเมล', key: 'email' },
   { title: 'ชื่อ',  key: 'name' },
   { title: 'ตำเเหน่ง',  key: 'role' },
-  { title: 'แผนก',  key: 'department_id' },
-  { title: 'กลุ่ม',  key: 'group_id' },
+  { title: 'แผนก',  key: 'daprt_name' },
+  { title: 'กลุ่ม',  key: 'group_name' },
   { title: 'สถานะ',  key: 'active' },
   { title: 'จัดการ',  key: 'actions', sortable: false }
 ]
@@ -108,7 +108,10 @@ const  loaddata = async() => {
     const res = await axios.get('http://localhost:7000/api/admin/userlist')
     console.log('success' , res.data)
     
-    users.value = res.data
+        users.value = res.data.map(user => ({
+      ...user,
+      active: user.active === 1 ? 'ใช้งาน' : 'ปิดใช้งาน'
+    }))
   }catch(e){
     console.log(e)
   }

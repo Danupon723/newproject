@@ -3,7 +3,10 @@ const bcrypt = require('bcrypt')
 // เเสดงข้อมูล ผู้ใช้บัญชีทั้งหมด
 exports.userlist = async (req, res, next) => {
   try {
-    const user = await conn('users').select("*").orderBy("id" , "desc")
+    const user = await conn('users')
+                      .leftJoin('departments' , 'users.department_id' , 'departments.id')
+                      .leftJoin('org_groups' , 'users.group_id' , 'org_groups.id')
+                      .select("users.*" , "departments.name as daprt_name" ,"org_groups.name as group_name" )
     res.json(user)
   } catch (e) {
     next(e)
@@ -121,16 +124,13 @@ exports.assignments = async (req,res,next)=>{
                               .leftJoin('evaluation_periods' , 'assignments.period_id' ,  'evaluation_periods.id')
                               .leftJoin({evaluator : 'users'}, 'assignments.evaluator_id' , 'evaluator.id')
                               .leftJoin({evaluatee : 'users'}, 'assignments.evaluatee_id' , 'evaluatee.id')
-                              .leftJoin('departments' , 'assignments.depi_id' , 'departments.id')
                               .select('assignments.*' ,
                                       'evaluation_periods.name as period_name' , 
                                       'evaluator.name as evaluator_name',
-                                      'evaluatee.name as evaluatee_name' , 
-                                      'departments.name as deprmt_name'
-                                      
+                                      'evaluatee.name as evaluatee_name' ,                                      
                                       )
 
-                    res.json({assignments})
+                    res.json(assignments)
                               
   }catch(e){
     next(e)
@@ -138,4 +138,45 @@ exports.assignments = async (req,res,next)=>{
 }
 
 
-exports.itemassignments = async ()
+exports.itemassignments = async (req,res,next)=>{
+try{
+    const itemperiod = await conn('evaluation_periods').select()
+    const itemevaluator = await conn('users').where({role : 'evaluator'})
+    const itemevaluatee = await conn('users')
+    .leftJoin('departments' , 'users.department_id' , 'departments.id')
+    .where({'users.role' : 'evaluatee'})
+    .select('users.*' , 'departments.name as deprt_name' )
+
+
+      res.json({period : itemperiod , evaluator :  itemevaluator , evaluatee :  itemevaluatee})
+
+}catch(e){
+  next(e)
+}
+}
+
+exports.createassignment = async (req,res,next)=>{
+  try{
+    console.log(req.body)
+    const {periodId ,evaluatorId  , evaluateeId , description} = req.body
+   const exists = await conn("assignments")
+      .where({
+        period_id: periodId,
+        evaluator_id: evaluatorId,
+        evaluatee_id: evaluateeId,
+        dept_id: description,
+      })
+      .first();
+
+    if (exists) {
+      return res.status(409).json({
+        success: false,
+        message: "รายการนี้ถูกกำหนดผู้ประเมินแล้ว",
+      });
+    }
+    const create = await conn('assignments').insert({	period_id : periodId ,	evaluator_id	: evaluatorId ,evaluatee_id : evaluateeId , dept_id :description})
+    res.json({success:true , message :"complata"})
+  }catch(e){
+    next(e)
+  }
+}

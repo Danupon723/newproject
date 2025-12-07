@@ -9,19 +9,11 @@
       >
         <template #top>
           <v-toolbar flat>
-            <v-toolbar-title>รายการหัวข้อการประเมินหลัก</v-toolbar-title>
-            <router-link to="addmaintopic"><v-btn color="primary" >เพิ่มหัวข้อประเมินหลัก</v-btn></router-link>
+            <v-toolbar-title>รายการหัวข้อการประเมินย่อย</v-toolbar-title>
+            <router-link to="addevaluatorrole"><v-btn color="primary" >เพิ่มหัวข้อประเมินย่อย</v-btn></router-link>
           </v-toolbar>
         </template>
-      <template #item.active="{ item }">
-        <v-chip
-          :color="item.active === 'ใช้งาน' ? 'green' : 'red'"
-          text-color="white"
-          size="small"
-        >
-          {{ item.active }}
-        </v-chip>
-      </template>
+  
 
 
         <template #item.actions="{ item }">
@@ -52,26 +44,21 @@ const form = ref({
 })
 
 const headers = [
-   { title: 'ลำดับ', key: 'id' },
-  { title: 'หัวข้อการประเมิน', key: 'name' },
-  { title: 'ปีที่้เริ่ม',  key: 'buddhist_year' },
-  { title: 'วันที่เริ่ม',  key: 'start_date' },
-  { title: 'วันที่จบ',  key: 'end_date' },
-  { title: 'สถานะ',  key: 'active' },
-  { title: 'จัดการ',  key: 'actions', sortable: false }
+  { text: 'ลำดับ', value: 'id' },
+  { text: 'หัวข้อการปรเมิน', value: 'period_name' },
+  { text: 'ผู้ประเมิน', value: 'evaluator_name' },
+  { text: 'ผู้ถูกประเมิน', value: 'evaluatee_name' },
+  { text: 'เเผนก', value: 'dept_id' },
+  { text: 'จัดการ', value: 'actions', sortable: false }
 ]
 
 // ✅ ดึงข้อมูลหัวข้อ
 const fetchTopics = async () => {
   loading.value = true
   try {
-    const res = await axios.get('http://localhost:7000/api/admin/periodslist')
-    console.log(res.data)
-    // topics.value = res.data
-        topics.value = res.data.map(user => ({
-      ...user,
-      active: user.active === 1 ? 'ใช้งาน' : 'ปิดใช้งาน'
-    }))
+    const res = await axios.get('http://localhost:7000/api/admin/assignments')
+  //  console.log(res.data)
+    topics.value = res.data
   } catch (err) {
     console.error(err)
   } finally {

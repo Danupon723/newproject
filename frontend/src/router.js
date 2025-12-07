@@ -19,6 +19,8 @@ import addevalua from './manage/addevalua.vue'
 import edituser from './manage/edituser.vue'
 import addsubtopic from './manage/addsubtopic.vue'
 import profile from './view/user/profile.vue'
+import evaluatorrole from './view/admin/evaluatorrole.vue'
+import addvaluator from './manage/addevaluatorrole.vue'
 import { components } from 'vuetify/dist/vuetify.js'
 const routes = [
   { path: '/', name : Login,  component: Login },
@@ -26,7 +28,6 @@ const routes = [
   {
     path: '/admin' , 
     component : AdminLayout , 
-    
     children:[
          { path: '', redirect: '/admin/dashboard' },
          { path: "dashboard", component: adminDashboard },
@@ -40,6 +41,8 @@ const routes = [
          {path:"addevalua" , component:addevalua},
          {path: "edituser" , component:edituser},
          {path: "addsubtopic" , component:addsubtopic},
+         {path: "evaluatorrole" , component:evaluatorrole},
+         {path: "addevaluatorrole" , component:addvaluator},
     ] , 
      meta: { requiresAuth: true}
   } , 
