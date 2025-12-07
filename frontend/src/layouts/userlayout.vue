@@ -10,14 +10,14 @@
     <!-- Sidebar -->
     <v-navigation-drawer app permanent>
       <v-list>
-        <v-list-item link to="/admin/dashboard">
-          <v-list-item-title>Dashboard</v-list-item-title>
-        </v-list-item>
         <v-list-item link to="/user/profile">
-          <v-list-item-title>profile</v-list-item-title>
+          <v-list-item-title>โปรไฟล์ผู้ใช้</v-list-item-title>
         </v-list-item>
-        <v-list-item link to="/admin/topic">
-          <v-list-item-title>topic</v-list-item-title>
+        <v-list-item link to="/user/dashboard">
+          <v-list-item-title>หน้าหลัก</v-list-item-title>
+        </v-list-item>
+        <v-list-item link to="/user/information">
+          <v-list-item-title>หัวข้อการประเมิน</v-list-item-title>
         </v-list-item>
         <v-list-item @click="logout()" >
           <v-list-item-title >logout</v-list-item-title>
@@ -35,7 +35,6 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import axios from 'axios'
-
 
 // ไม่มี state พิเศษตอนนี้ 
 function logout(){

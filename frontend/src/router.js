@@ -19,6 +19,13 @@ import addevalua from './manage/addevalua.vue'
 import edituser from './manage/edituser.vue'
 import addsubtopic from './manage/addsubtopic.vue'
 import profile from './view/user/profile.vue'
+import Editprofileuser from './view/user/Editprofileuser.vue'
+import Export from './view/user/Export.vue'
+import information from './view/user/information.vue'
+import results from './view/user/results.vue'
+import score from './view/user/score.vue'
+import estimate from './view/user/estimate.vue'
+
 import { components } from 'vuetify/dist/vuetify.js'
 const routes = [
   { path: '/', name : Login,  component: Login },
@@ -48,9 +55,15 @@ const routes = [
     component : userlayout , 
     
     children:[
-         { path: '', redirect: '/user/dashboard' },
+         { path: '', redirect: '/user/profile' },
+         {path:'profile' , component:profile},
          { path: "dashboard", component: dashbord },
-         { path: "profile", component: profile },
+         {path:'Editprofile' , component:Editprofileuser},
+         {path:'Export' , component:Export},
+         {path:'information' , component:information},
+         {path:'results' , component:results},
+         {path:'score' , component:score},
+         {path:'estimate' , component:estimate},
     ] , 
      meta: { requiresAuth: true}
   } , 

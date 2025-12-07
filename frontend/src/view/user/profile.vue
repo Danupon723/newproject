@@ -23,7 +23,7 @@
               :title="user.department || '-'"
             ></v-list-item>
             <v-list-item 
-              :title="user.location || '-'"
+              :title="user.group || '-'"
             ></v-list-item>
           </v-list>
 
@@ -53,7 +53,7 @@ const user = ref({
   role: '',
   email: '',
   department: '',
-  location: '',
+  group: '',
   avatarUrl: null
 });
 
@@ -62,7 +62,7 @@ const defaultAvatar = '/images/default-avatar.png'; // เปลี่ยนเ�
 
 // ปุ่มแก้ไข
 const handleEdit = () => {
-  router.push('/profile/edit'); // หรือเปิด Dialog แก้ไขข้อมูล
+  router.push('/user/Editprofile'); // หรือเปิด Dialog แก้ไขข้อมูล
 };
 
 // โหลดข้อมูลผู้ใช้จาก API
@@ -73,18 +73,16 @@ const loadUser = async () => {
 
     const res = await axios.get('http://localhost:7000/api/evaluatee/profile', { headers });
     console.log(res.data)
-    // if (res.data && res.data.length > 0) {
-    //   const apiUser = res.data;
-    //   user.value = {
-    //     name: apiUser.name || '',
-    //     role: apiUser.role || '',
-    //     email: apiUser.email || '',
-    //     department: apiUser.department || '',
-    //     location: apiUser.location || '',
-    //     avatarUrl: apiUser.avatarUrl || null
-    //   };
-    // }
-    // console.log('โหลดข้อมูลผู้ใช้:', user.value);
+    console.log(res.data.item)
+    const data = res.data.item
+    user.value = {
+      name: data.name || '',
+      role: data.role || '',
+      email: data.email || '',
+      department: data.deprmt_name || '',
+      group: data.group_name || '',
+      avatarUrl: data.avatarUrl || null
+    };
   } catch (err) {
     console.error('โหลดข้อมูลผู้ใช้ไม่สำเร็จ', err);
   }
