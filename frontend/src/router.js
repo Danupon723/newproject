@@ -25,10 +25,12 @@ import information from './view/user/information.vue'
 import results from './view/user/results.vue'
 import score from './view/user/score.vue'
 import estimate from './view/user/estimate.vue'
+import testupload from './view/testupload.vue'
 
 import { components } from 'vuetify/dist/vuetify.js'
 const routes = [
   { path: '/', name : Login,  component: Login },
+  { path: '/testupload', name : testupload,  component: testupload },
   { path: '/register',name : Register ,  component: Register } , 
   {
     path: '/admin' , 

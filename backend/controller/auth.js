@@ -31,7 +31,7 @@ exports.login = async (req,res,next) =>{
         const voity = await bcrypt.compare(password,  user.password)
         if(!voity){return res.status(401).json({success:false,message:'รหัสผ่านไม่ถุก'})}
 
-        const token =  jwt.sign({id: user.id , role: user.role} , process.env.SECRETKEY , {expiresIn: process.env.EXPIRES || '2h'})
+        const token =  jwt.sign({id: user.id , name : user.name, role: user.role} , process.env.SECRETKEY , {expiresIn: process.env.EXPIRES || '2h'})
         res.json({success:true , token , role:user.role})
 
     }catch(e){
