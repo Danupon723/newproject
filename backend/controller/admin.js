@@ -180,3 +180,38 @@ exports.createassignment = async (req,res,next)=>{
     next(e)
   }
 }
+exports.topiclist = async (req,res,next)=>{
+  try{
+    const topiclist  = await conn('evaluation_topic').select('*')
+
+    res.json(topiclist)
+  }catch(e){
+    next(e)
+  }
+}
+exports.createtopic = async (req,res,next)=>{
+  try{
+    console.log(req.body)
+    const {title_th , description , weight} = req.body
+    const exit = await conn('evaluation_topic').where({title_th}).first()
+    if(exit){ return res.status(409).json({success:false , message : 'มีเเล้ว'})}
+
+    const add = await conn('evaluation_topic').insert({title_th , description , weight})
+    res.json({success: true , message : 'complata'})
+  }catch(e){
+    next(e)
+  }
+}
+exports.addindicator = async (req,res,next)=>{
+  try{
+    console.log(req.body)
+     const {topicId , title , description , weight , score} = req.body
+     const exit = await conn('indicators').where({name : title ,topic_id : topicId}).first()
+     if(exit){ return res.status(409).json({success:false , message : 'no'})}
+
+     const add = await conn('indicators').insert({topic_id : topicId , name : title ,description , type : score , weight })
+     res.json({success:true , message : 'complata' })
+  }catch(e){
+    next(e)
+  }
+}

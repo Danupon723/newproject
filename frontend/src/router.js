@@ -21,9 +21,14 @@ import addsubtopic from './manage/addsubtopic.vue'
 import profile from './view/user/profile.vue'
 import evaluatorrole from './view/admin/evaluatorrole.vue'
 import addvaluator from './manage/addevaluatorrole.vue'
+import evaluate from './view/user/evaluate.vue'
+import Indicator from './view/admin/Indicator.vue'
+import addtopic2 from './manage/addtopic2.vue'
+import test from './view/test.vue'
 import { components } from 'vuetify/dist/vuetify.js'
 const routes = [
   { path: '/', name : Login,  component: Login },
+  { path: '/test', name : test,  component: test },
   { path: '/register',name : Register ,  component: Register } , 
   {
     path: '/admin' , 
@@ -43,6 +48,8 @@ const routes = [
          {path: "addsubtopic" , component:addsubtopic},
          {path: "evaluatorrole" , component:evaluatorrole},
          {path: "addevaluatorrole" , component:addvaluator},
+         {path: "Indicator" , component:Indicator},
+         {path: "addtopic2" , component:addtopic2},
     ] , 
      meta: { requiresAuth: true}
   } , 
@@ -54,6 +61,7 @@ const routes = [
          { path: '', redirect: '/user/dashboard' },
          { path: "dashboard", component: dashbord },
          { path: "profile", component: profile },
+         { path: "evaluate", component: evaluate },
     ] , 
      meta: { requiresAuth: true}
   } , 

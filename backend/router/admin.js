@@ -11,8 +11,11 @@ router.get('/indicatorslist' , admincontroller.indicatorslist)
 router.get('/periodslist' , admincontroller.periodslist)
 router.get('/assignments' , admincontroller.assignments)
 router.get('/itemassignments' , admincontroller.itemassignments)
+router.get('/topiclist' , admincontroller.topiclist)
 router.post('/createperiod' , admincontroller.createperiod)
 router.post('/createassignment' , admincontroller.createassignment)
+router.post('/createtopic' , admincontroller.createtopic)
+router.post('/addindicator' , admincontroller.addindicator)
 
 
 module.exports = router

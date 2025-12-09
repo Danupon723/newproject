@@ -1,38 +1,27 @@
 <template>
   <v-container class="d-flex justify-center align-center" style="height: 100vh;">
-    <!-- ฟอร์มเดียว -->
     <v-card class="pa-6" style="max-width: 600px; width: 100%;">
-      <h2 class="text-h6 mb-4 text-center">เพิ่มรายการ</h2>
+      <h2 class="text-h6 mb-4 text-center">เพิ่มหัวข้อประเมินย่อย</h2>
 
-      <!-- Dropdown 1 -->
+      <!-- Dropdown เลือก Topic -->
       <v-select
-        v-model="form.option1"
-        :items="options1"
-        label="เลือกผู้ใช้"
-        variant="outlined"
-      />
-
-      <!-- Dropdown 2 : แผนก -->
-      <v-select
-        v-model="form.option2"
-        :items="options2"
-        item-title="name"
+        v-model="form.topicId"
+        :items="topics"
+        item-title="title_th"
         item-value="id"
-        label="เลือกแผนก"
+        label="เลือกหัวข้อหลัก"
+        variant="outlined"
+      />
+
+      <!-- Title -->
+      <v-text-field
+        v-model="form.title"
+        label="ชื่อหัวข้อประเมินย่อย"
         variant="outlined"
         class="mt-4"
       />
 
-      <!-- Dropdown 3 -->
-      <v-select
-        v-model="form.option3"
-        :items="options3"
-        label="เลือกผู้ที่จะประเมิน"
-        variant="outlined"
-        class="mt-4"
-      />
-
-      <!-- คำอธิบาย -->
+      <!-- Description -->
       <v-text-field
         v-model="form.description"
         label="คำอธิบาย"
@@ -40,8 +29,28 @@
         class="mt-4"
       />
 
+      <!-- Weight -->
+      <v-text-field
+        v-model="form.weight"
+        label="คะแนนเต็ม"
+        type="number"
+        variant="outlined"
+        class="mt-4"
+      />
+
+      <!-- Score 1-4 -->
+      <v-select
+        v-model="form.score"
+        :items="['yes_no','file_url','score_1_4']"
+        label="คะแนน (1-4)"
+        variant="outlined"
+        class="mt-4"
+      />
+
+      
+
       <v-btn color="primary" class="mt-4" block @click="submitForm">
-        เพิ่ม
+        เพิ่มหัวข้อย่อย
       </v-btn>
     </v-card>
   </v-container>
@@ -50,44 +59,74 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import axios from 'axios'
+import { useRoute } from 'vue-router'
 
-// Dropdown options
-const options1 = ref(['ผู้ใช้ A', 'ผู้ใช้ B', 'ผู้ใช้ C'])
-const options2 = ref([]) // แผนก จะดึงจาก API
-const options3 = ref(['ผู้ประเมิน 1', 'ผู้ประเมิน 2', 'ผู้ประเมิน 3'])
+const router = useRoute()
 
 // ฟอร์ม
 const form = ref({
-  option1: '',
-  option2: '',
-  option3: '',
-  description: ''
+  topicId: '',
+  title: '',
+  description: '',
+  weight: '',
+  score: '',
+  file_url: '',
+  yes_no: ''
 })
 
-// โหลดแผนกจาก API
-async function loadDepartments() {
+// Dropdown Topic
+const topics = ref([])
+
+// โหลดหัวข้อหลักจาก API
+async function loadTopics() {
   try {
-    const res = await axios.get('http://localhost:7000/api/auth/dept')
-    options2.value = res.data
+    const res = await axios.get('http://localhost:7000/api/admin/topiclist')
+    topics.value = res.data
   } catch (err) {
-    console.error('โหลดแผนกไม่สำเร็จ', err)
+    console.error('โหลดหัวข้อไม่สำเร็จ', err)
   }
 }
 
-onMounted(() => {
-  loadDepartments()
-})
+onMounted(loadTopics)
 
-// ฟังก์ชัน submit form
-const submitForm = () => {
-  if (!form.value.option1 || !form.value.option2 || !form.value.option3 || !form.value.description) {
+// Submit form
+const submitForm = async () => {
+  if (!form.value.topicId || !form.value.title || !form.value.description || !form.value.weight
+      || !form.value.score ) {
     alert('กรอกข้อมูลให้ครบทุกช่อง')
     return
   }
 
-  console.log('ข้อมูลที่ส่ง:', { ...form.value })
+  const payload = {
+    topicId: form.value.topicId,
+    title: form.value.title,
+    description: form.value.description,
+    weight: form.value.weight,
+    score: form.value.score,
+  }
 
-  // ล้างฟอร์ม
-  form.value = { option1: '', option2: '', option3: '', description: '' }
+  try {
+    console.log(payload)
+    const res = await axios.post('http://localhost:7000/api/admin/addindicator', payload)
+    console.log('สร้างหัวข้อย่อยสำเร็จ', res.data)
+    
+    // รีเซ็ตฟอร์ม
+    form.value = {
+      topicId: '',
+      title: '',
+      description: '',
+      weight: '',
+      score: '',
+      file_url: '',
+      yes_no: ''
+    }
+
+    alert('เพิ่มหัวข้อย่อยเรียบร้อย')
+    router.push('/admin/subtopic')
+  } catch (err) {
+    console.error('เกิดข้อผิดพลาด', err)
+    alert('เพิ่มหัวข้อย่อยไม่สำเร็จ')
+    router.push('/admin/subtopic')
+  }
 }
 </script>

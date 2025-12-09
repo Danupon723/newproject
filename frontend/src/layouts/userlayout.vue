@@ -1,64 +1,74 @@
 <template>
   <v-app>
 
-
     <!-- Navbar -->
     <v-app-bar app color="primary" dark>
-      <v-toolbar-title>ยินดีต้อนรับ {{user}}</v-toolbar-title>
-      
+      <!-- ปุ่มเมนูสำหรับมือถือ -->
+      <v-app-bar-nav-icon @click="drawer = !drawer" />
+
+      <v-toolbar-title>ยินดีต้อนรับ เเอดมิน</v-toolbar-title> 
+      <v-btn color="write" class="d-flex justify-center mt-4" style="background-color: red;" @click="logout">
+        ออกจากระบบ
+      </v-btn>
     </v-app-bar>
+
     <!-- Sidebar -->
-    <v-navigation-drawer app permanent>
+    <v-navigation-drawer
+      app
+      v-model="drawer"
+      :permanent="!isMobile"
+    >
       <v-list>
-        <v-list-item link to="/admin/dashboard">
-          <v-list-item-title>Dashboard</v-list-item-title>
+        <v-list-item link to="/user/dashboard">
+          <v-list-item-title>แดชบอร์ด</v-list-item-title>
         </v-list-item>
+
         <v-list-item link to="/user/profile">
-          <v-list-item-title>profile</v-list-item-title>
+          <v-list-item-title>ตารางเเสดงชื่อผู้ใช้</v-list-item-title>
         </v-list-item>
-        <v-list-item link to="/admin/topic">
-          <v-list-item-title>topic</v-list-item-title>
+
+        <v-list-item link to="/user/evaluate">
+          <v-list-item-title>หัวข้อการประเมินหลัก</v-list-item-title>
         </v-list-item>
-        <v-list-item @click="logout()" >
-          <v-list-item-title >logout</v-list-item-title>
-        </v-list-item>
-        <!-- เพิ่มลิงก์อื่น ๆ -->
       </v-list>
     </v-navigation-drawer>
+
     <!-- เนื้อหาหลัก -->
     <v-main>
-      <router-view></router-view>
+      <router-view />
     </v-main>
+
   </v-app>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
-import axios from 'axios'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { useRouter } from 'vue-router'
 
+const router = useRouter()
 
-// ไม่มี state พิเศษตอนนี้ 
-function logout(){
-  localStorage.removeItem('token')
-  router.replace('/') 
-}
+// ตัวควบคุม drawer
+const drawer = ref(true)
 
-const user = ref([]) // เปลี่ยนจาก [] เป็น {}
+// ตรวจว่าหน้าจอมือถือไหม
+const isMobile = ref(false)
 
-async function loaddata() {
-  try {
-    const res = await axios.get('http://localhost:7000/api/evaluatee/profile')
-    if (res.data && res.data.length > 0) {
-      user.value = res.data[0] // เอาผู้ใช้คนแรก
-    }
-    console.log('โหลดข้อมูลสำเร็จ:', user.value)
-  } catch (e) {
-    console.log('โหลดข้อมูลไม่สำเร็จ', e)
-  }
+const checkScreen = () => {
+  isMobile.value = window.innerWidth <= 900
+  drawer.value = !isMobile.value // มือถือ = ปิดอัตโนมัติ
 }
 
 onMounted(() => {
-  loaddata()
+  checkScreen()
+  window.addEventListener('resize', checkScreen)
 })
 
+onUnmounted(() => {
+  window.removeEventListener('resize', checkScreen)
+})
+
+function logout() {
+  localStorage.removeItem('token')
+  router.replace('/')
+}
 </script>

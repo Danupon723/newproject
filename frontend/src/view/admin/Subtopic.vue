@@ -1,108 +1,117 @@
 <template>
   <v-container>
-    <!-- ตารางแสดงหัวข้อการประเมิน -->
-    <v-card>
-      <v-data-table
-        :headers="headers"
-        :items="topics"
-        :loading="loading"
-      >
-        <template #top>
-          <v-toolbar flat>
-            <v-toolbar-title>รายการหัวข้อการประเมินย่อย</v-toolbar-title>
-            <router-link to="addsubtopic"><v-btn color="primary" >เพิ่มหัวข้อประเมินย่อย</v-btn></router-link>
+
+    <v-data-table
+      :headers="headers"
+      :items="users"
+      :loading="loading"
+      item-key="id"
+      class="elevation-1"
+    >
+      <template #top>
+         <v-toolbar flat>
+            <v-toolbar-title>เเสดงรายชื่อผู้ใช้งาน</v-toolbar-title>
+            <router-link to="addtopic2"><v-btn color="primary" >เพิ่มหัวข้อการปรเมิน</v-btn></router-link>
           </v-toolbar>
-        </template>
+      </template>
 
-        <template #item.actions="{ item }">
-          <v-btn icon color="warning" @click="editTopic(item)">
-            <v-icon>mdi-pencil</v-icon>
-          </v-btn>
 
-          <v-btn icon color="red" @click="deleteTopic(item.id)">
-            <v-icon>mdi-delete</v-icon>
-          </v-btn>
-        </template>
-      </v-data-table>
-    </v-card>
+      <!-- ✅ สถานะ -->
+     
+   
+
+      <!-- ✅ ปุ่มจัดการ -->
+      <template #item.actions="{ item }">
+        <v-btn icon @click="editUser(item)">
+          <v-icon>mdi-pencil</v-icon>
+        </v-btn>
+
+        <v-btn icon color="red" @click="deleteUser(item.id)">
+          <v-icon>mdi-delete</v-icon>
+        </v-btn>
+      </template>
+    </v-data-table>
   </v-container>
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue'
 import axios from 'axios'
+import { useRouter } from 'vue-router'
 
-const topics = ref([])
+const router = useRouter()
+const users = ref([])
 const loading = ref(false)
 
-const form = ref({
-  id: null,
-  title: '',
-  score: ''
-})
 
+//ตัวเเปรเเก้ไขข้อมูล
+
+const editdialog = ref(false)//ควบคุมการเปิดปิดของ dialog
+const editusers = ref({})// เก็บข้อมูลผู้ใช้ที่เลือก
+
+//ฟังชั้นเปิด dialog 
+const openEditDialog = (user) => {
+  editUserData.value = { ...user }  // clone ข้อมูลเพื่อแก้ไข
+  editDialog.value = true           // เปิด Dialog
+}
+
+// <!-- ✅ ส่วนหัวตาราง (ตรง DB 100%) -->
 const headers = [
-  { text: 'ลำดับ', value: 'id' },
-  { text: 'ชื่อหัวข้อการประเมิน', value: 'title' },
-  { text: 'คะแนนเต็ม', value: 'score' },
-  { text: 'จัดการ', value: 'actions', sortable: false }
+   { title: 'ลำดับ', key: 'id' },
+  { title: 'หัวข้อ', key: 'title_th' },
+  { title: 'เเสดงคำอธิบาย',  key: 'description' },
+  { title: 'คะเเนน',  key: 'weight' },
+  
+  { title: 'จัดการ',  key: 'actions', sortable: false }
 ]
 
-// ✅ ดึงข้อมูลหัวข้อ
-const fetchTopics = async () => {
+// <!-- ✅ ฟังก์ชันดึงข้อมูลจากฐานข้อมูล -->
+const fetchUsers = async () => {
   loading.value = true
   try {
-    const res = await axios.get('http://localhost:7000/api/topics')
-    topics.value = res.data
+    const res = await axios.get('http://localhost:7000/api/admin/topiclist')
+
+    console.log('API RESPONSE:', res.data) // ✅ ใช้เช็กกรณีมีปัญหา
+
+    users.value = res.data
   } catch (err) {
-    console.error(err)
+    console.error('Error fetching users:', err)
   } finally {
     loading.value = false
   }
 }
 
-// ✅ เพิ่ม / แก้ไขหัวข้อ
-const submitTopic = async () => {
+const updateUser = async () => {
   try {
-    if (form.value.id) {
-      // แก้ไข
-      await axios.put(`http://localhost:7000/api/topics/${form.value.id}`, form.value)
-    } else {
-      // เพิ่มใหม่
-      await axios.post('http://localhost:7000/api/topics', form.value)
-    }
-
-    resetForm()
-    fetchTopics()
+    await axios.put(`http://localhost:7000/api/admin/users/${editUserData.value.id}`, editUserData.value)
+    fetchUsers()           // โหลดข้อมูลใหม่หลังอัพเดท
+    editDialog.value = false
   } catch (err) {
-    console.error(err)
+    console.error('อัพเดทไม่สำเร็จ', err)
   }
 }
 
-// ✅ แก้ไข
-const editTopic = (item) => {
-  form.value = { ...item }
+
+const adduser = (user) => {
+  router.push('adduser')
 }
 
-// ✅ ลบ
-const deleteTopic = async (id) => {
-  if (!confirm('ยืนยันการลบหัวข้อนี้?')) return
+const deleteUser = async (id) => {
+  if (!confirm('คุณต้องการลบผู้ใช้นี้หรือไม่?')) return
+
   try {
-    await axios.delete(`http://localhost:7000/api/topics/${id}`)
-    fetchTopics()
+    await axios.delete(`http://localhost:7000/api/auth/users/${id}`)
+    fetchUsers() 
   } catch (err) {
-    console.error(err)
+    console.error('Error deleting user:', err)
   }
 }
 
-// ✅ รีเซ็ตฟอร์ม
-const resetForm = () => {
-  form.value = {
-    id: null,
-    title: '',
-    score: ''
-  }
-}
-
-onMounted(fetchTopics)
+onMounted(fetchUsers)
 </script>
+
+<style scoped>
+.v-data-table {
+  margin-top: 20px;
+}
+</style>

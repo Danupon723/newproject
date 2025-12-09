@@ -53,9 +53,7 @@
         </v-chip>
         
       </template>
-      <template #item.index="{ index }">
-        {{ index + 1 }}
-      </template>
+
 
       <!-- ✅ ปุ่มจัดการ -->
       <template #item.actions="{ item }">
@@ -91,7 +89,7 @@ onMounted(() => {
 
 // ✅ หัวตาราง (เพิ่มคอลัมน์ "จัดการ")
 const headers = [
-   { title: 'ลำดับ', key: 'index' },
+   { title: 'ลำดับ', key: 'id' },
   { title: 'อีเมล', key: 'email' },
   { title: 'ชื่อ',  key: 'name' },
   { title: 'ตำเเหน่ง',  key: 'role' },
