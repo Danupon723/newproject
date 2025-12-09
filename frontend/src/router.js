@@ -61,8 +61,8 @@ const routes = [
     
     children:[
          { path: '', redirect: '/user/profile' },
-         { path: "profile", component: profile },
          { path: "dashboard", component: dashbord },
+         { path: "profile", component: profile },
          { path: "evaluate", component: evaluate },
          {path:'estimate' , component:estimate},
          {path:'comment' , component:comment},
