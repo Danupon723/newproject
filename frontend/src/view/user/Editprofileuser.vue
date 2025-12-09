@@ -3,6 +3,19 @@
     <v-row justify="center">
       <v-col cols="12" sm="8" md="5">
         <v-card elevation="6" rounded="xl">
+
+          <!-- ✅ ปุ่มย้อนกลับ -->
+          <v-card-actions>
+            <v-btn
+              icon
+              variant="text"
+              class="text-primary"
+              @click="router.back()"
+            >
+              <v-icon>mdi-arrow-left</v-icon>           
+            </v-btn>
+          </v-card-actions>
+
           <v-card-title class="text-center text-primary">
             แก้ไขข้อมูลส่วนตัว
           </v-card-title>
@@ -41,18 +54,21 @@
               บันทึกข้อมูล
             </v-btn>
           </v-card-actions>
+
         </v-card>
       </v-col>
     </v-row>
   </v-container>
 </template>
 
+
 <script setup>
 import { ref, onMounted } from 'vue'
 import axios from 'axios'
 import { useRouter } from 'vue-router'
 
-const router = useRouter() 
+const router = useRouter()
+
 const defaultImg = '/default-avatar.png'   // รูป default
 const preview = ref(null)
 const file = ref(null)
@@ -72,13 +88,29 @@ const onFileChange = (e) => {
 }
 
 const save = async () => {
-  const form = new FormData()
-  form.append('name', u.value.name)
-  if (file.value) form.append('avatar', file.value)
+  try {
+    // ✅ 1. สร้าง FormData
+    const form = new FormData()
+    form.append('name', u.value.name)
 
-  await axios.post(URL, form, {
-    headers: { 'Content-Type': 'multipart/form-data' }
-  })
+    // ✅ 2. ใส่ไฟล์ (ถ้ามี)
+    if (file.value) {
+      form.append('avatar', file.value)
+    }
+
+    // ✅ 3. ยิง API
+    await axios.post(URL, form, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    })
+
+    // ✅ 4. หลังบันทึกสำเร็จ
     router.push('/user/profile')
+  } catch (err) {
+    console.error(err)
+    alert('บันทึกข้อมูลไม่สำเร็จ')
+  }
 }
+
 </script>

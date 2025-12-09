@@ -1,55 +1,12 @@
 <template>
   <v-container>
-    <!-- ฟอร์มเพิ่มข้อมูล -->
-    <v-card class="mb-6" elevation="4">
-      <v-card-title class="text-h6">
-        เพิ่มข้อมูลการประเมิน
-      </v-card-title>
-
-      <v-card-text>
-        <v-row>
-          <!-- dropdown -->
-          <v-col cols="12" md="8">
-            <v-select
-              v-model="selectedPeriod"
-              :items="periods"
-              item-title="name"
-              item-value="id"
-              label="เลือกหัวข้อการประเมิน"
-              variant="outlined"
-            />
-          </v-col>
-
-          <v-col cols="12" md="4">
-            <v-text-field
-              v-model="score"
-              label="คะแนน"
-              type="number"
-              variant="outlined"
-            />
-          </v-col>
-
-          <v-col cols="12">
-            <v-btn
-              block
-              color="primary"
-              :disabled="!selectedPeriod || !score"
-              @click="save"
-            >
-              บันทึกข้อมูล
-            </v-btn>
-          </v-col>
-        </v-row>
-      </v-card-text>
-    </v-card>
-
-    <!-- ✅ ตารางเดิมของคุณ (ไม่หาย) -->
     <v-card>
       <v-data-table
         :headers="headers"
         :items="periods"
         :loading="loading"
       >
+        <!-- หัวตาราง -->
         <template #top>
           <v-toolbar flat>
             <v-toolbar-title>
@@ -57,6 +14,19 @@
             </v-toolbar-title>
           </v-toolbar>
         </template>
+
+        <!-- ✅ ปุ่มเพิ่มข้อมูล -->
+        <template #item.action="{ item }">
+          <v-btn
+            color="primary"
+            size="small"
+            prepend-icon="mdi-plus-circle"
+            @click="goToAddData(item.id)"
+          >
+            เพิ่มข้อมูล
+          </v-btn>
+        </template>
+
       </v-data-table>
     </v-card>
   </v-container>
@@ -64,10 +34,11 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import axios from 'axios'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
 
 const periods = ref([])
-const selectedPeriod = ref(null)
-const score = ref('')
 const loading = ref(false)
 
 const headers = [
@@ -76,10 +47,11 @@ const headers = [
   { title: 'ปี', key: 'buddhist_year' },
   { title: 'วันเริ่ม', key: 'start_date' },
   { title: 'วันสิ้นสุด', key: 'end_date' },
-  { title: 'สถานะ', key: 'active' }
+  { title: 'สถานะ', key: 'active' },
+  { title: 'จัดการ', key: 'action', sortable: false } // ✅ เพิ่มคอลัมน์
 ]
 
-// ✅ API เดียว
+// ✅ API เดียว (ของเดิมคุณ)
 const fetchPeriods = async () => {
   loading.value = true
   try {
@@ -92,13 +64,12 @@ const fetchPeriods = async () => {
   }
 }
 
-const save = async () => {
-  // ตรงนี้แค่ตัวอย่างการส่งค่า
-  console.log('selected period:', selectedPeriod.value)
-  console.log('score:', score.value)
-
-  score.value = ''
-  selectedPeriod.value = null
+// ✅ ไปหน้าเพิ่มข้อมูลของหัวข้อนั้น
+const goToAddData = (periodId) => {
+  router.push({
+    path: '/user/score', // 🔧 เปลี่ยน path ตามจริง
+    query: { periodId }
+  })
 }
 
 onMounted(fetchPeriods)

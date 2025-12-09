@@ -4,8 +4,7 @@
 
     <!-- Navbar -->
     <v-app-bar app color="primary" dark>
-      <v-toolbar-title>ยินดีต้อนรับ {{user}}</v-toolbar-title>
-      
+<v-toolbar-title>ยินดีต้อนรับ ผู้ใช้</v-toolbar-title> <v-btn color="write" class="d-flex justify-center mt-4" style="background-color: red;" @click="logout">ออกจากระบบ</v-btn>
     </v-app-bar>
     <!-- Sidebar -->
     <v-navigation-drawer app permanent>
@@ -17,10 +16,7 @@
           <v-list-item-title>หน้าหลัก</v-list-item-title>
         </v-list-item>
         <v-list-item link to="/user/information">
-          <v-list-item-title>หัวข้อการประเมิน</v-list-item-title>
-        </v-list-item>
-        <v-list-item @click="logout()" >
-          <v-list-item-title >logout</v-list-item-title>
+          <v-list-item-title>หัวข้อประเมิน</v-list-item-title>
         </v-list-item>
         <!-- เพิ่มลิงก์อื่น ๆ -->
       </v-list>
@@ -35,6 +31,9 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import axios from 'axios'
+import { useRoute } from 'vue-router'
+
+const router = useRoute()
 
 // ไม่มี state พิเศษตอนนี้ 
 function logout(){

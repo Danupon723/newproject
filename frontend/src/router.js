@@ -2,6 +2,8 @@ import { createRouter, createWebHistory } from 'vue-router'
 import Login from './view/login.vue'
 import Register from './view/register.vue'
 
+
+//ส่วนadmin
 import AdminLayout from "./layouts/AdminLayout.vue"
 import adminDashboard from "../src/view/admin/dashbard.vue"
 import adminusers from "../src/view/admin/users.vue"
@@ -12,22 +14,26 @@ import userlayout from './layouts/userlayout.vue'
 import Assessorlayout from './layouts/Assessorlayout.vue'
 import assessordashbord from './view/Assessor/dashbord.vue'
 import Subtopic from './view/admin/Subtopic.vue'
+//ส่วนเพิ่มข้อมูล
 import adduser from './manage/adduser.vue'
 import addmaintopic from './manage/addmaintopic.vue'
 import addtopic from './manage/addtopic.vue'
 import addevalua from './manage/addevalua.vue'
 import edituser from './manage/edituser.vue'
 import addsubtopic from './manage/addsubtopic.vue'
+
+//ส่วนuser
 import profile from './view/user/profile.vue'
 import Editprofileuser from './view/user/Editprofileuser.vue'
 import Export from './view/user/Export.vue'
 import information from './view/user/information.vue'
-import results from './view/user/results.vue'
 import score from './view/user/score.vue'
 import estimate from './view/user/estimate.vue'
 import testupload from './view/testupload.vue'
 
-import { components } from 'vuetify/dist/vuetify.js'
+//ส่วนของผู้ประเมิน
+import topicass from './view/Assessor/topicass.vue'
+
 const routes = [
   { path: '/', name : Login,  component: Login },
   { path: '/testupload', name : testupload,  component: testupload },
@@ -63,7 +69,6 @@ const routes = [
          {path:'Editprofile' , component:Editprofileuser},
          {path:'Export' , component:Export},
          {path:'information' , component:information},
-         {path:'results' , component:results},
          {path:'score' , component:score},
          {path:'estimate' , component:estimate},
     ] , 
@@ -76,6 +81,7 @@ const routes = [
     children:[
          { path: '', redirect: '/assessor/dashboard' },
          { path: "dashboard", component: assessordashbord },
+         {path: 'topicass' , component: topicass},
     ] , 
      meta: { requiresAuth: true}
   } , 
