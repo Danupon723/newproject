@@ -18,7 +18,11 @@
       v-model="drawer"
       :permanent="!isMobile"
     >
+<<<<<<< Updated upstream
       <v-list>
+=======
+    <v-list>
+>>>>>>> Stashed changes
         <v-list-item link to="/user/profile">
           <v-list-item-title>โปรไฟล์</v-list-item-title>
         </v-list-item>

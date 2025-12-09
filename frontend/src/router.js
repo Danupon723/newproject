@@ -60,9 +60,9 @@ const routes = [
     component : userlayout , 
     
     children:[
-         { path: '', redirect: '/user/dashboard' },
-         { path: "dashboard", component: dashbord },
+         { path: '', redirect: '/user/profile' },
          { path: "profile", component: profile },
+         { path: "dashboard", component: dashbord },
          { path: "evaluate", component: evaluate },
          {path:'estimate' , component:estimate},
          {path:'comment' , component:comment},
