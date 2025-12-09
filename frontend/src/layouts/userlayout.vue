@@ -6,7 +6,7 @@
       <!-- ปุ่มเมนูสำหรับมือถือ -->
       <v-app-bar-nav-icon @click="drawer = !drawer" />
 
-      <v-toolbar-title>ยินดีต้อนรับ เเอดมิน</v-toolbar-title> 
+      <v-toolbar-title>ยินดีต้อนรับ ผู้ใช้</v-toolbar-title> 
       <v-btn color="write" class="d-flex justify-center mt-4" style="background-color: red;" @click="logout">
         ออกจากระบบ
       </v-btn>
@@ -19,13 +19,13 @@
       :permanent="!isMobile"
     >
       <v-list>
+        <v-list-item link to="/user/profile">
+          <v-list-item-title>โปรไฟล์</v-list-item-title>
+        </v-list-item>
         <v-list-item link to="/user/dashboard">
           <v-list-item-title>แดชบอร์ด</v-list-item-title>
         </v-list-item>
 
-        <v-list-item link to="/user/profile">
-          <v-list-item-title>ตารางเเสดงชื่อผู้ใช้</v-list-item-title>
-        </v-list-item>
 
         <v-list-item link to="/user/evaluate">
           <v-list-item-title>หัวข้อการประเมินหลัก</v-list-item-title>

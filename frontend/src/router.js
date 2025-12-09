@@ -25,6 +25,8 @@ import evaluate from './view/user/evaluate.vue'
 import Indicator from './view/admin/Indicator.vue'
 import addtopic2 from './manage/addtopic2.vue'
 import test from './view/test.vue'
+import estimate from './view/user/estimate.vue'
+import comment from './view/user/comment.vue'
 import { components } from 'vuetify/dist/vuetify.js'
 const routes = [
   { path: '/', name : Login,  component: Login },
@@ -62,6 +64,8 @@ const routes = [
          { path: "dashboard", component: dashbord },
          { path: "profile", component: profile },
          { path: "evaluate", component: evaluate },
+         {path:'estimate' , component:estimate},
+         {path:'comment' , component:comment},
     ] , 
      meta: { requiresAuth: true}
   } , 

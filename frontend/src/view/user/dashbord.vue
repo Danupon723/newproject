@@ -1,140 +1,143 @@
 <template>
   <v-container fluid>
-    <h3 class="text-h5 mb-6">ตารางเเสดงผลข้อมูล</h3>
+    <h2 class="mb-4">แดชบอร์ดผู้รับการประเมิน</h2>
 
-    <!-- การ์ดสรุปข้อมูล -->
+    <!-- ✅ สรุปด้านบน -->
     <v-row>
       <v-col cols="12" md="4">
-        <v-card class="pa-4" elevation="3">
-          <h3>หัวข้อประเมิน ทั้งหมด</h3>
-          <h2 class="text-primary">128 คน</h2>
+        <v-card color="blue-lighten-4">
+          <v-card-text>
+            <div class="text-h6">สถานะการประเมิน</div>
+            <div class="text-h5 font-weight-bold">
+              {{ status }}
+            </div>
+          </v-card-text>
         </v-card>
       </v-col>
 
       <v-col cols="12" md="4">
-        <v-card class="pa-4" elevation="3">
-          <h3>ผู้ประเมินเเล้ว</h3>
-          <h2 class="text-success">32 คน</h2>
+        <v-card color="green-lighten-4">
+          <v-card-text>
+            <div class="text-h6">คะแนนรวม</div>
+            <div class="text-h4 font-weight-bold">
+              {{ totalScore }}
+            </div>
+          </v-card-text>
         </v-card>
       </v-col>
 
       <v-col cols="12" md="4">
-        <v-card class="pa-4" elevation="3">
-          <h3>ยังไม่ถูกประเมิน</h3>
-          <h2 class="text-warning">8 รายการ</h2>
+        <v-card color="orange-lighten-4">
+          <v-card-text>
+            <div class="text-h6">หัวข้อทั้งหมด</div>
+            <div class="text-h4 font-weight-bold">
+              {{ indicators }}
+            </div>
+          </v-card-text>
         </v-card>
       </v-col>
     </v-row>
 
-    <!-- ✅ ตารางพร้อมปุ่มแก้ไข + ลบ -->
-    <v-card class="mt-6">
-<v-data-table
-      :headers="headers"
-      :items="users"
-      :loading="loading"
-      item-key="id"
-      class="elevation-1"
-    >
-      <template #top>
-        <v-toolbar flat>
-          <v-toolbar-title>รายชื่อผู้ใช้งาน</v-toolbar-title>
-        </v-toolbar>
-      </template>
+    <br />
 
+    <!-- ✅ ตารางความคืบหน้า -->
+    <v-card>
+      <v-data-table
+        :headers="headers"
+        :items="topics"
+        :loading="loading"
+        item-value="id"
+      >
+        <template #top>
+          <v-toolbar flat>
+            <v-toolbar-title>ความคืบหน้าการประเมิน</v-toolbar-title>
+          </v-toolbar>
+        </template>
 
-      <!-- ✅ สถานะ -->
-      <template #item.active="{ item }">
-        <v-chip
-          :color="item.active === 'ใช้งาน' ? 'green' : 'red'"
-          text-color="white"
-          size="small"
-        >
-          {{ item.active }}
-        </v-chip>
-        
-      </template>
+        <!-- ✅ progress -->
+        <template #item.progress="{ item }">
+          <v-progress-linear
+            :model-value="item.progress"
+            height="18"
+            rounded
+            color="primary"
+          >
+            <strong class="text-white">
+              {{ item.progress }}%
+            </strong>
+          </v-progress-linear>
+        </template>
 
-
-      <!-- ✅ ปุ่มจัดการ -->
-      <template #item.actions="{ item }">
-        <v-btn icon @click="editUser(item)">
-          <v-icon>mdi-pencil</v-icon>
-        </v-btn>
-
-
-      </template>
-    </v-data-table>
+        <!-- ✅ ปุ่มดูความคืบหน้า -->
+        <template #item.action="{ item }">
+          <v-btn
+            color="info"
+            size="small"
+            prepend-icon="mdi-chart-line"
+            @click="goToProgress(item.id)"
+          >
+            ดูความคืบหน้า
+          </v-btn>
+        </template>
+      </v-data-table>
     </v-card>
   </v-container>
 </template>
 
 <script setup>
-import axios from 'axios'
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import axios from 'axios'
 
+/* ✅ router */
 const router = useRouter()
-const users = ref([])
-const loading  = ref(false)
 
-// ✅ ตรวจ token กันหลุดเข้า admin
-onMounted(() => {
-  const token = localStorage.getItem('token')
-  if (!token) {
-    router.replace('/')
-  }
-})
+/* ✅ state */
+const status = ref('กำลังประเมิน')
+const totalScore = ref(0)
+const indicators = ref(0)
+const topics = ref([])
+const loading = ref(false)
 
-// ✅ หัวตาราง (เพิ่มคอลัมน์ "จัดการ")
+/* ✅ headers ตาราง */
 const headers = [
-   { title: 'ลำดับ', key: 'id' },
-  { title: 'อีเมล', key: 'email' },
-  { title: 'ชื่อ',  key: 'name' },
-  { title: 'ตำเเหน่ง',  key: 'role' },
-  { title: 'แผนก',  key: 'daprt_name' },
-  { title: 'กลุ่ม',  key: 'group_name' },
-  { title: 'สถานะ',  key: 'active' },
-  { title: 'จัดการ',  key: 'actions', sortable: false }
+  { title: 'ลำดับ', key: 'id' },
+  { title: 'หัวข้อการประเมิน', key: 'name' },
+  { title: 'ปีที่เริ่ม', key: 'buddhist_year' },
+  { title: 'วันที่เริ่ม', key: 'start_date' },
+  { title: 'วันที่จบ', key: 'end_date' },
+  { title: 'ความคืบหน้า (%)', key: 'progress' },
+  { title: 'การทำรายการ', key: 'action' }
 ]
 
-//ฟังชั้นเรียกข้อมูลจากฐานข้อมูล
+/* ✅ ดึงข้อมูลหัวข้อประเมิน */
+const fetchTopics = async () => {
+  loading.value = true
+  try {
+    const res = await axios.get(
+      'http://localhost:7000/api/admin/periodslist'
+    )
 
-const  loaddata = async() => {
-  try{
-    const res = await axios.get('http://localhost:7000/api/admin/userlist')
-    console.log('success' , res.data)
-    
-        users.value = res.data.map(user => ({
-      ...user,
-      active: user.active === 1 ? 'ใช้งาน' : 'ปิดใช้งาน'
+    topics.value = res.data.map((item, index) => ({
+      ...item,
+      progress: item.progress ?? 0
     }))
-  }catch(e){
-    console.log(e)
+
+    indicators.value = topics.value.length
+  } catch (err) {
+    console.error('โหลดข้อมูลไม่สำเร็จ', err)
+  } finally {
+    loading.value = false
   }
 }
 
-
-
-
-// ✅ ฟังก์ชันแก้ไข
-const editUser = (user) => {
-  router.push('edituser')
+/* ✅ ไปหน้าดูความคืบหน้า */
+const goToProgress = (periodId) => {
+  router.push({
+    path: '/user/comment',
+    query: { periodId }
+  })
 }
 
-// ✅ ฟังก์ชันลบ
-const deleteUser = (user) => {
-  if (!confirm(`คุณต้องการลบ ${user.name} ใช่หรือไม่?`)) return
-
-  users.value = users.value.filter(u => u !== user)
-}
-
-
-onMounted(() => {
-  const token = localStorage.getItem('token')
-  if (!token) {
-    router.replace('/')
-  }
-
-  loaddata()  // ✅ เรียกฟังก์ชันโหลดข้อมูล
-})
+onMounted(fetchTopics)
 </script>
