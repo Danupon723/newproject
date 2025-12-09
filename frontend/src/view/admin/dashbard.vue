@@ -1,8 +1,8 @@
 <template>
   <v-container fluid>
-    <h3 class="text-h5 mb-6">ตารางแสดงผลข้อมูล</h3>
+    <h3 class="text-h5 mb-6">ตารางเเสดงผลข้อมูล</h3>
 
-    <!-- การ์ดสรุปข้อมูล -->
+    <!-- ✅ การ์ดสรุปข้อมูล (ไม่ลบ ไม่แก้) -->
     <v-row>
       <v-col cols="12" md="4">
         <v-card class="pa-4" elevation="3">
@@ -51,10 +51,6 @@
           </v-chip>
         </template>
 
-        <template #item.index="{ index }">
-          {{ index + 1 }}
-        </template>
-
         <template #item.actions="{ item }">
           <v-btn icon @click="openEditDialog(item)">
             <v-icon>mdi-pencil</v-icon>
@@ -66,7 +62,7 @@
       </v-data-table>
     </v-card>
 
-    <!-- Popup แก้ไขผู้ใช้ -->
+    <!-- ✅ Popup แก้ไข -->
     <v-dialog v-model="editDialog" max-width="600px">
       <v-card class="pa-6">
         <h2 class="text-h5 mb-4">แก้ไขข้อมูลผู้ใช้</h2>
@@ -78,24 +74,16 @@
             type="email"
             variant="outlined"
             class="mb-3"
-            prepend-inner-icon="mdi-email"
           />
-          <v-text-field
-            label="รหัสผ่าน"
-            v-model="editUserData.password"
-            type="password"
-            variant="outlined"
-            class="mb-3"
-            prepend-inner-icon="mdi-lock"
-            placeholder="เว้นว่างถ้าไม่เปลี่ยนรหัส"
-          />
+
           <v-text-field
             label="ชื่อผู้ใช้"
             v-model="editUserData.name"
             variant="outlined"
             class="mb-3"
-            prepend-inner-icon="mdi-account"
           />
+
+          <!-- ✅ แก้ตรงนี้: แผนก -->
           <v-select
             v-model="editUserData.department_id"
             :items="departments"
@@ -105,6 +93,8 @@
             variant="outlined"
             class="mb-3"
           />
+
+          <!-- ✅ แก้ตรงนี้: กลุ่ม -->
           <v-select
             v-model="editUserData.group_id"
             :items="groups"
@@ -114,26 +104,21 @@
             variant="outlined"
             class="mb-3"
           />
-          <v-select
-            v-model="editUserData.role_id"
-            :items="roles"
-            item-title="name"
-            item-value="id"
-            label="ตำแหน่ง"
-            variant="outlined"
-            class="mb-3"
-          />
 
           <v-btn type="submit" color="primary" block class="mt-4">
             บันทึก
           </v-btn>
-          <v-btn color="grey" block class="mt-2" @click="editDialog = false">
+          <v-btn
+            color="grey"
+            block
+            class="mt-2"
+            @click="editDialog = false"
+          >
             ย้อนกลับ
           </v-btn>
         </v-form>
       </v-card>
     </v-dialog>
-
   </v-container>
 </template>
 
@@ -143,48 +128,34 @@ import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
+
 const users = ref([])
 const loading = ref(false)
 
-// Popup แก้ไข
 const editDialog = ref(false)
 const editUserData = ref({})
 
-// Options จากฐานข้อมูล
 const departments = ref([])
 const groups = ref([])
-const roles = ref([])
 
-// ตรวจ token และโหลดข้อมูล
-onMounted(() => {
-  const token = localStorage.getItem('token')
-  if (!token) router.replace('/')
-  loadUsers()
-  loadOptions()
-})
-
-// หัวตาราง
 const headers = [
-  { title: 'ลำดับ', key: 'index' },
+  { title: 'ลำดับ', key: 'id' },
   { title: 'อีเมล', key: 'email' },
   { title: 'ชื่อ', key: 'name' },
-  { title: 'ตำเเหน่ง', key: 'role' },
-  { title: 'แผนก', key: 'department' },
-  { title: 'กลุ่ม', key: 'group' },
+  { title: 'ตำแหน่ง', key: 'role' },
+  { title: 'แผนก', key: 'depart_name' },
+  { title: 'กลุ่ม', key: 'group_name' },
   { title: 'สถานะ', key: 'active' },
   { title: 'จัดการ', key: 'actions', sortable: false }
 ]
 
-// โหลดผู้ใช้งาน
+// ✅ โหลด users
 const loadUsers = async () => {
   loading.value = true
   try {
     const res = await axios.get('http://localhost:7000/api/admin/userlist')
     users.value = res.data.map(u => ({
       ...u,
-      department: u.department_name,
-      group: u.group_name,
-      role: u.role_name,
       active: u.active === 1 ? 'ใช้งาน' : 'ปิดใช้งาน'
     }))
   } catch (e) {
@@ -194,40 +165,34 @@ const loadUsers = async () => {
   }
 }
 
-// โหลด options จากฐานข้อมูล
-const loadOptions = async () => {
+// ✅ โหลด แผนก + กลุ่ม
+const loadMasterData = async () => {
   try {
-    const [deptRes, groupRes, roleRes] = await Promise.all([
-      axios.get('http://localhost:7000/api/departments'),
-      axios.get('http://localhost:7000/api/groups'),
-      axios.get('http://localhost:7000/api/roles')
-    ])
-    departments.value = deptRes.data
-    groups.value = groupRes.data
-    roles.value = roleRes.data
+    const dept = await axios.get('http://localhost:7000/api/admin/dept')
+    departments.value = dept.data   // { id, name }
+
+    const group = await axios.get('http://localhost:7000/api/admin/grop')
+    groups.value = group.data       // { id, name }
   } catch (e) {
-    console.error('โหลด options ไม่สำเร็จ', e)
+    console.error(e)
   }
 }
 
-// เปิด popup + โหลดข้อมูลผู้ใช้
-const openEditDialog = (user) => {
+const openEditDialog = user => {
   editUserData.value = {
-    id: user.id,
-    email: user.email,
-    password: '',
-    name: user.name,
+    ...user,
     department_id: user.department_id,
-    group_id: user.group_id,
-    role_id: user.role_id
+    group_id: user.group_id
   }
   editDialog.value = true
 }
 
-// อัพเดทผู้ใช้
 const updateUser = async () => {
   try {
-    await axios.put(`http://localhost:7000/api/admin/users/${editUserData.value.id}`, editUserData.value)
+    await axios.put(
+      `http://localhost:7000/api/admin/users/${editUserData.value.id}`,
+      editUserData.value
+    )
     alert('บันทึกสำเร็จ')
     editDialog.value = false
     loadUsers()
@@ -237,9 +202,15 @@ const updateUser = async () => {
   }
 }
 
-// ลบผู้ใช้
-const deleteUser = (user) => {
-  if (!confirm(`คุณต้องการลบ ${user.name} ใช่หรือไม่?`)) return
-  users.value = users.value.filter(u => u !== user)
+const deleteUser = user => {
+  if (!confirm(`ลบ ${user.name} ใช่หรือไม่`)) return
+  users.value = users.value.filter(u => u.id !== user.id)
 }
+
+onMounted(() => {
+  const token = localStorage.getItem('token')
+  if (!token) router.replace('/')
+  loadUsers()
+  loadMasterData()
+})
 </script>
