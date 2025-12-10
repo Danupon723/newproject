@@ -1,113 +1,133 @@
 <template>
   <v-container>
-
+    <!-- ตารางหัวข้อ -->
     <v-data-table
       :headers="headers"
-      :items="users"
+      :items="topics"
       :loading="loading"
       item-key="id"
       class="elevation-1"
     >
       <template #top>
-         <v-toolbar flat>
-            <v-toolbar-title>เเสดงรายชื่อผู้ใช้งาน</v-toolbar-title>
-            <router-link to="addtopic2"><v-btn color="primary" >เพิ่มหัวข้อการปรเมิน</v-btn></router-link>
-          </v-toolbar>
+        <v-toolbar flat>
+          <v-toolbar-title>รายการหัวข้อการประเมิน</v-toolbar-title>
+          <v-spacer />
+          <v-btn color="primary" @click="dialogAdd = true">
+            เพิ่มหัวข้อการประเมิน
+          </v-btn>
+        </v-toolbar>
       </template>
 
-
-      <!-- ✅ สถานะ -->
-     
-   
-
-      <!-- ✅ ปุ่มจัดการ -->
       <template #item.actions="{ item }">
-        <v-btn icon @click="editUser(item)">
+        <v-btn icon color="warning" @click="editTopic(item)">
           <v-icon>mdi-pencil</v-icon>
         </v-btn>
-
-        <v-btn icon color="red" @click="deleteUser(item.id)">
+        <v-btn icon color="red" @click="deleteTopic(item.id)">
           <v-icon>mdi-delete</v-icon>
         </v-btn>
       </template>
     </v-data-table>
+
+    <!-- Popup เพิ่มหัวข้อ -->
+    <v-dialog v-model="dialogAdd" max-width="600">
+      <v-card class="pa-6">
+        <h2 class="text-h5 mb-4">เพิ่มหัวข้อการประเมิน</h2>
+
+        <v-form @submit.prevent="saveTopic">
+          <v-text-field
+            v-model="form.title_th"
+            label="ชื่อหัวข้อ"
+            required
+          />
+          <v-text-field
+            v-model="form.description"
+            label="คำอธิบาย"
+          />
+          <v-text-field
+            v-model="form.weight"
+            type="number"
+            label="คะเเนน"
+            required
+          />
+
+          <v-card-actions class="mt-4">
+            <v-spacer />
+            <v-btn text @click="dialogAdd = false">ยกเลิก</v-btn>
+            <v-btn color="primary" @click="saveTopic">เพิ่มหัวข้อ</v-btn>
+          </v-card-actions>
+        </v-form>
+      </v-card>
+    </v-dialog>
   </v-container>
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue'
 import axios from 'axios'
-import { useRouter } from 'vue-router'
 
-const router = useRouter()
-const users = ref([])
+const topics = ref([])
 const loading = ref(false)
+const dialogAdd = ref(false)
 
+const form = ref({
+  title_th: '',
+  description: '',
+  weight: ''
+})
 
-//ตัวเเปรเเก้ไขข้อมูล
-
-const editdialog = ref(false)//ควบคุมการเปิดปิดของ dialog
-const editusers = ref({})// เก็บข้อมูลผู้ใช้ที่เลือก
-
-//ฟังชั้นเปิด dialog 
-const openEditDialog = (user) => {
-  editUserData.value = { ...user }  // clone ข้อมูลเพื่อแก้ไข
-  editDialog.value = true           // เปิด Dialog
-}
-
-// <!-- ✅ ส่วนหัวตาราง (ตรง DB 100%) -->
 const headers = [
-   { title: 'ลำดับ', key: 'id' },
+  { title: 'ลำดับ', key: 'id' },
   { title: 'หัวข้อ', key: 'title_th' },
-  { title: 'เเสดงคำอธิบาย',  key: 'description' },
-  { title: 'คะเเนน',  key: 'weight' },
-  
-  { title: 'จัดการ',  key: 'actions', sortable: false }
+  { title: 'คำอธิบาย', key: 'description' },
+  { title: 'คะเเนน', key: 'weight' },
+  { title: 'จัดการ', key: 'actions', sortable: false }
 ]
 
-// <!-- ✅ ฟังก์ชันดึงข้อมูลจากฐานข้อมูล -->
-const fetchUsers = async () => {
+// ดึงข้อมูลหัวข้อ
+const fetchTopics = async () => {
   loading.value = true
   try {
     const res = await axios.get('http://localhost:7000/api/admin/topiclist')
-
-    console.log('API RESPONSE:', res.data) // ✅ ใช้เช็กกรณีมีปัญหา
-
-    users.value = res.data
+    topics.value = res.data
   } catch (err) {
-    console.error('Error fetching users:', err)
+    console.error(err)
   } finally {
     loading.value = false
   }
 }
 
-const updateUser = async () => {
+// เพิ่มหัวข้อ
+const saveTopic = async () => {
   try {
-    await axios.put(`http://localhost:7000/api/admin/users/${editUserData.value.id}`, editUserData.value)
-    fetchUsers()           // โหลดข้อมูลใหม่หลังอัพเดท
-    editDialog.value = false
+    await axios.post('http://localhost:7000/api/admin/createTopic', form.value)
+    alert('เพิ่มหัวข้อสำเร็จ ✅')
+    dialogAdd.value = false
+    form.value = { title_th:'', description:'', weight:'' }
+    fetchTopics()
   } catch (err) {
-    console.error('อัพเดทไม่สำเร็จ', err)
+    console.error(err)
+    alert('เพิ่มหัวข้อไม่สำเร็จ ❌')
   }
 }
 
-
-const adduser = (user) => {
-  router.push('adduser')
+// แก้ไขหัวข้อ
+const editTopic = (item) => {
+  form.value = { ...item }
+  dialogAdd.value = true
 }
 
-const deleteUser = async (id) => {
-  if (!confirm('คุณต้องการลบผู้ใช้นี้หรือไม่?')) return
-
+// ลบหัวข้อ
+const deleteTopic = async (id) => {
+  if (!confirm('ยืนยันการลบหัวข้อนี้?')) return
   try {
-    await axios.delete(`http://localhost:7000/api/auth/users/${id}`)
-    fetchUsers() 
+    await axios.delete(`http://localhost:7000/api/admin/topic/${id}`)
+    fetchTopics()
   } catch (err) {
-    console.error('Error deleting user:', err)
+    console.error(err)
   }
 }
 
-onMounted(fetchUsers)
+onMounted(fetchTopics)
 </script>
 
 <style scoped>

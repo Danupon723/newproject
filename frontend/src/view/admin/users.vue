@@ -1,6 +1,7 @@
 <template>
   <v-container>
 
+    <!-- ✅ ตารางผู้ใช้ -->
     <v-data-table
       :headers="headers"
       :items="users"
@@ -9,125 +10,184 @@
       class="elevation-1"
     >
       <template #top>
-         <v-toolbar flat>
-            <v-toolbar-title>เเสดงรายชื่อผู้ใช้งาน</v-toolbar-title>
-            <router-link to="adduser"><v-btn color="primary" >เพิ่มผู้ใช้งานบัญชี</v-btn></router-link>
-          </v-toolbar>
+        <v-toolbar flat>
+          <v-toolbar-title>แสดงรายชื่อผู้ใช้งาน</v-toolbar-title>
+          <v-spacer />
+          <v-btn color="primary" @click="addDialog = true">
+            เพิ่มผู้ใช้งานบัญชี
+          </v-btn>
+        </v-toolbar>
       </template>
 
-
-      <!-- ✅ สถานะ -->
-      <template #item.active="{ item }">
-        <v-chip
-          :color="item.active === 'ใช้งาน' ? 'green' : 'red'"
-          text-color="white"
-          size="small"
-        >
-          {{ item.active }}
-        </v-chip>
-        
-      </template>
       <template #item.index="{ index }">
         {{ index + 1 }}
       </template>
 
-      <!-- ✅ ปุ่มจัดการ -->
-      <template #item.actions="{ item }">
-        <v-btn icon @click="editUser(item)">
-          <v-icon>mdi-pencil</v-icon>
-        </v-btn>
-
-        <v-btn icon color="red" @click="deleteUser(item.id)">
-          <v-icon>mdi-delete</v-icon>
-        </v-btn>
+      <template #item.active="{ item }">
+        <v-chip
+          :color="item.active === 'ใช้งาน' ? 'green' : 'red'"
+          size="small"
+        >
+          {{ item.active }}
+        </v-chip>
       </template>
     </v-data-table>
+
+    <!-- ✅ POPUP (เอาฟอร์มคุณมาใส่ตรงนี้) -->
+    <v-dialog v-model="addDialog" max-width="500">
+      <v-card class="pa-6">
+
+        <v-card-title class="text-h5 text-center mb-4">
+          📝 เพิ่มข้อมูลผู้ใช้
+        </v-card-title>
+
+        <v-form>
+          <v-text-field
+            label="อีเมล"
+            v-model="email"
+            type="email"
+            variant="outlined"
+            class="mb-3"
+            prepend-inner-icon="mdi-email"
+          />
+
+          <v-text-field
+            label="รหัสผ่าน"
+            v-model="password"
+            type="password"
+            variant="outlined"
+            class="mb-3"
+            prepend-inner-icon="mdi-lock"
+          />
+
+          <v-text-field
+            label="ชื่อผู้ใช้"
+            v-model="name"
+            variant="outlined"
+            class="mb-3"
+            prepend-inner-icon="mdi-account"
+          />
+
+          <v-select
+            v-model="department_id"
+            :items="department"
+            item-title="name"
+            item-value="id"
+            label="แผนก"
+            variant="outlined"
+            class="mb-3"
+          />
+
+          <v-select
+            v-model="group_id"
+            :items="group"
+            item-title="name"
+            item-value="id"
+            label="กลุ่ม"
+            variant="outlined"
+            class="mb-3"
+          />
+
+          <v-select
+            v-model="roles"
+            :items="role"
+            label="ตำแหน่ง"
+            variant="outlined"
+            class="mb-4"
+          />
+
+          <v-card-actions>
+            <v-spacer />
+            <v-btn text @click="addDialog = false">ยกเลิก</v-btn>
+            <v-btn color="primary" @click="handleRegister">
+              เพิ่มผู้ใช้
+            </v-btn>
+          </v-card-actions>
+
+        </v-form>
+      </v-card>
+    </v-dialog>
+
   </v-container>
 </template>
-
 <script setup>
-import { ref, onMounted } from 'vue'
-import axios from 'axios'
-import { useRouter } from 'vue-router'
+import { ref, onMounted } from "vue";
+import axios from "axios";
 
-const router = useRouter()
 const users = ref([])
 const loading = ref(false)
+const addDialog = ref(false)
 
+// ✅ ฟอร์ม (ของเดิม)
+const email = ref("");
+const password = ref("");
+const name = ref("");
+const department_id = ref("");
+const group_id = ref("");
+const roles = ref("");
 
-//ตัวเเปรเเก้ไขข้อมูล
+// ✅ dropdown data
+const department = ref([])
+const group = ref([])
+const role = ['admin','evaluatee','evaluator']
 
-const editdialog = ref(false)//ควบคุมการเปิดปิดของ dialog
-const editusers = ref({})// เก็บข้อมูลผู้ใช้ที่เลือก
-
-//ฟังชั้นเปิด dialog 
-const openEditDialog = (user) => {
-  editUserData.value = { ...user }  // clone ข้อมูลเพื่อแก้ไข
-  editDialog.value = true           // เปิด Dialog
-}
-
-// <!-- ✅ ส่วนหัวตาราง (ตรง DB 100%) -->
+// ✅ หัวตาราง
 const headers = [
-   { title: 'ลำดับ', key: 'index' },
+  { title: 'ลำดับ', key: 'index' },
   { title: 'อีเมล', key: 'email' },
-  { title: 'ชื่อ',  key: 'name' },
-  { title: 'ตำเเหน่ง',  key: 'role' },
-  { title: 'แผนก',  key: 'daprt_name' },
-  { title: 'กลุ่ม',  key: 'group_name' },
-  { title: 'สถานะ',  key: 'active' },
-  { title: 'จัดการ',  key: 'actions', sortable: false }
+  { title: 'ชื่อ', key: 'name' },
+  { title: 'ตำแหน่ง', key: 'role' },
+  { title: 'แผนก', key: 'daprt_name' },
+  { title: 'กลุ่ม', key: 'group_name' },
+  { title: 'สถานะ', key: 'active' }
 ]
 
-// <!-- ✅ ฟังก์ชันดึงข้อมูลจากฐานข้อมูล -->
+// ✅ โหลด USERS
 const fetchUsers = async () => {
   loading.value = true
+  const res = await axios.get('http://localhost:7000/api/admin/userlist')
+  users.value = res.data.map(u => ({
+    ...u,
+    active: u.active === 1 ? 'ใช้งาน' : 'ปิดใช้งาน'
+  }))
+  loading.value = false
+}
+
+// ✅ โหลด แผนก / กลุ่ม
+const loaddata = async () => {
+  const dept = await axios.get('http://localhost:7000/api/admin/dept')
+  department.value = dept.data
+
+  const grp = await axios.get('http://localhost:7000/api/admin/grop')
+  group.value = grp.data
+}
+
+// ✅ submit เดิม (เพิ่ม close popup + refresh)
+const handleRegister = async () => {
+  const pay = {
+    name: name.value,
+    email: email.value,
+    password: password.value,
+    department_id: department_id.value,
+    group_id: group_id.value,
+    role: roles.value
+  }
+
   try {
-    const res = await axios.get('http://localhost:7000/api/admin/userlist')
+    await axios.post('http://localhost:7000/api/auth/register', pay)
 
-    console.log('API RESPONSE:', res.data) // ✅ ใช้เช็กกรณีมีปัญหา
+    addDialog.value = false
+    name.value = email.value = password.value = ""
+    department_id.value = group_id.value = roles.value = ""
 
-    users.value = res.data.map(user => ({
-      ...user,
-      active: user.active === 1 ? 'ใช้งาน' : 'ปิดใช้งาน'
-    }))
-  } catch (err) {
-    console.error('Error fetching users:', err)
-  } finally {
-    loading.value = false
+    fetchUsers()
+  } catch (e) {
+    console.log(e)
   }
 }
 
-const updateUser = async () => {
-  try {
-    await axios.put(`http://localhost:7000/api/admin/users/${editUserData.value.id}`, editUserData.value)
-    fetchUsers()           // โหลดข้อมูลใหม่หลังอัพเดท
-    editDialog.value = false
-  } catch (err) {
-    console.error('อัพเดทไม่สำเร็จ', err)
-  }
-}
-
-
-const adduser = (user) => {
-  router.push('adduser')
-}
-
-const deleteUser = async (id) => {
-  if (!confirm('คุณต้องการลบผู้ใช้นี้หรือไม่?')) return
-
-  try {
-    await axios.delete(`http://localhost:7000/api/auth/users/${id}`)
-    fetchUsers() 
-  } catch (err) {
-    console.error('Error deleting user:', err)
-  }
-}
-
-onMounted(fetchUsers)
+onMounted(() => {
+  fetchUsers()
+  loaddata()
+})
 </script>
-
-<style scoped>
-.v-data-table {
-  margin-top: 20px;
-}
-</style>
