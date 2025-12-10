@@ -11,8 +11,7 @@ import topic from './view/admin/topic.vue'
 import edittopic from './manage/edittopic.vue'
 import dashbord from './view/user/dashbord.vue'
 import userlayout from './layouts/userlayout.vue'
-import Assessorlayout from './layouts/Assessorlayout.vue'
-import assessordashbord from './view/Assessor/dashbord.vue'
+
 import Subtopic from './view/admin/Subtopic.vue'
 //ส่วนเพิ่มข้อมูล
 import adduser from './manage/adduser.vue'
@@ -33,6 +32,10 @@ import testupload from './view/testupload.vue'
 
 //ส่วนของผู้ประเมิน
 import topicass from './view/Assessor/topicass.vue'
+import Assessorlayout from './layouts/Assessorlayout.vue'
+import assessordashbord from './view/Assessor/dashbord.vue'
+import subtopic from './view/Assessor/subtopic.vue'
+import userass from './view/Assessor/user.vue'
 
 const routes = [
   { path: '/', name : Login,  component: Login },
@@ -82,6 +85,8 @@ const routes = [
          { path: '', redirect: '/assessor/dashboard' },
          { path: "dashboard", component: assessordashbord },
          {path: 'topicass' , component: topicass},
+         {path:'subtopic' , component:subtopic},
+         {path:'userass' , component:userass},
     ] , 
      meta: { requiresAuth: true}
   } , 

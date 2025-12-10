@@ -4,7 +4,7 @@
 
     <!-- Navbar -->
     <v-app-bar app color="primary" dark>
-      <v-toolbar-title>ยินดีต้อนรับ ผู้ประเมิน </v-toolbar-title>
+      <v-toolbar-title>ยินดีต้อนรับ ผู้ประเมิน </v-toolbar-title> <v-btn color="write" class="d-flex justify-center mt-4" style="background-color: red;" @click="logout">ออกจากระบบ</v-btn>
       
     </v-app-bar>
     <!-- Sidebar -->
@@ -13,7 +13,7 @@
         <v-list-item link to="/assessor/dashboard">
           <v-list-item-title>Dashboard</v-list-item-title>
         </v-list-item>
-        <v-list-item link to="/admin/users">
+        <v-list-item link to="/assessor/userass">
           <v-list-item-title>Users</v-list-item-title>
         </v-list-item>
         <v-list-item link to="/admin/topic">

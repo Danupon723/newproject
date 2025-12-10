@@ -1,6 +1,5 @@
 <template>
   <v-container>
-    <!-- ปุ่มย้อนกลับ -->
     <v-btn
       variant="text"
       prepend-icon="mdi-arrow-left"
@@ -12,18 +11,21 @@
 
     <h2 class="mb-4">รายละเอียดการประเมิน</h2>
 
-    <!-- ✅ หัวข้อการประเมิน -->
-    <v-card class="mb-4" elevation="3">
+    <!-- หัวข้อการประเมิน -->
+    <v-card class="mb-4" elevation="3" v-if="period.id">
       <v-card-title class="text-h6 text-primary">
         {{ period.name }}
       </v-card-title>
       <v-card-text>
         <div><strong>ปีประเมิน:</strong> {{ period.buddhist_year }}</div>
-        <div><strong>ช่วงเวลา:</strong> {{ period.start_date }} - {{ period.end_date }}</div>
+        <div>
+          <strong>ช่วงเวลา:</strong>
+          {{ period.start_date }} - {{ period.end_date }}
+        </div>
       </v-card-text>
     </v-card>
 
-    <!-- ✅ ตัวชี้วัด -->
+    <!-- ตัวชี้วัด -->
     <v-card
       class="mb-4"
       elevation="2"
@@ -35,19 +37,15 @@
       </v-card-title>
 
       <v-card-text>
-        <!-- ✅ รายละเอียดข้อมูล -->
         <div class="mb-3">
           <strong>รายละเอียดข้อมูล:</strong>
-          <p class="mt-1">
-            {{ item.description }}
-          </p>
+          <p class="mt-1">{{ item.description || '-' }}</p>
         </div>
 
-        <!-- ✅ หลักฐาน -->
         <div>
           <strong>หลักฐาน:</strong>
 
-          <v-list density="compact" v-if="item.files.length">
+          <v-list v-if="item.files?.length" density="compact">
             <v-list-item
               v-for="file in item.files"
               :key="file.id"
@@ -65,7 +63,6 @@
         </div>
       </v-card-text>
     </v-card>
-
   </v-container>
 </template>
 <script setup>
@@ -77,19 +74,18 @@ const router = useRouter()
 const route = useRoute()
 
 const periodId = route.query.periodId
+const userId = route.query.userId   // ✅ ผู้รับการประเมิน
 
-// ✅ หัวข้อประเมิน
 const period = ref({})
-
-// ✅ ตัวชี้วัด
 const indicators = ref([])
 
 const fetchDetail = async () => {
   try {
-    // 🔹 ตัวอย่าง API (คุณเปลี่ยนตาม backend จริง)
     const res = await axios.get(
-      `http://localhost:7000/api/admin/periodslist`,
-      { params: { periodId } }
+      'http://localhost:7000/api/assessor/evaluation-detail',
+      {
+        params: { periodId, userId }
+      }
     )
 
     period.value = res.data.period

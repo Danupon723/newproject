@@ -1,102 +1,136 @@
 <template>
-  <v-container>
-    <h2 class="text-h5 mb-4">Dashboard ผู้ใช้งาน</h2>
+  <v-container fluid>
+    <h2 class="mb-4">แดชบอร์ดผู้รับการประเมิน</h2>
+    <v-card>
+      <v-data-table
+        :headers="headers"
+        :items="users"
+        :loading="loading"
+        item-value="id"
+      >
+        <template #top>
+          <v-toolbar flat>
+            <v-toolbar-title class="text-primary">
+              รายชื่อผู้รับการประเมิน
+            </v-toolbar-title>
+          </v-toolbar>
+        </template>
 
-    <!-- ตารางแสดงข้อมูล -->
-    <v-data-table
-      :headers="headers"
-      :items="users"
-      :loading="loading"
-      class="elevation-1"
-    >
-      <template #top>
-        <v-toolbar flat>
-          <v-toolbar-title>รายชื่อผู้ใช้งาน</v-toolbar-title>
-         <router-link to="adduser"><v-btn color="primary">เพิ่มผู้ใช้</v-btn></router-link> 
-        </v-toolbar>
-      </template>
+        <!-- ลำดับ -->
+        <template #item.index="{ index }">
+          {{ index + 1 }}
+        </template>
 
-      <!-- ช่องสถานะ Active -->
-      <template #item.active="{ item }">
-        <v-chip
-          :color="item.active === 'ใช้งาน' ? 'green' : 'red'"
-          text-color="white"
-          size="small"
-        >
-          {{ item.active }}
-        </v-chip>
-      </template>
+        <!-- สถานะ -->
+        <template #item.active="{ item }">
+          <v-chip
+            :color="item.active === 'ใช้งาน' ? 'green' : 'red'"
+            text-color="white"
+            size="small"
+          >
+            {{ item.active }}
+          </v-chip>
+        </template>
 
-      <!-- ปุ่มจัดการ -->
-      <template #item.actions="{ item }">
-        <v-btn icon @click="editUser(item)">
-          <v-icon>mdi-pencil</v-icon>
-        </v-btn>
+        <!-- คะแนน -->
+        <template #item.score="{ item }">
+          <v-chip color="green" text-color="white" variant="flat">
+            {{ item.score }}
+          </v-chip>
+        </template>
 
-        <v-btn icon color="red" @click="deleteUser(item.id)">
-          <v-icon>mdi-delete</v-icon>
-        </v-btn>
-      </template>
-    </v-data-table>
+        <!-- ✅ ปุ่ม (ไม่แตะตามที่ขอ) -->
+        <template #item.action="{ item }">
+          <v-btn
+            color="info"
+            size="small"
+            prepend-icon="mdi-chart-line"
+            @click="goToProgress(item.id)"
+          >
+            ประเมิน
+          </v-btn>
+        </template>
+
+        <template #item.detail="{ item }">
+          <v-btn
+            color="secondary"
+            size="small"
+            prepend-icon="mdi-file-document-outline"
+            @click="goToDetail(item.id)"
+          >
+            รายละเอียด
+          </v-btn>
+        </template>
+      </v-data-table>
+    </v-card>
   </v-container>
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import axios from 'axios'
 
+const router = useRouter()
+
+/* state */
+const status = ref('กำลังประเมิน')
+const totalScore = ref(0)
 const users = ref([])
 const loading = ref(false)
 
-// <!-- ✅ ส่วนหัวตาราง (ตรง DB 100%) -->
+/* ✅ headers (อ้างอิงตารางแรก) */
 const headers = [
-  { text: 'ID', value: 'id' },
-  { text: 'ชื่อ', value: 'name' },
-  { text: 'อีเมล', value: 'email' },
-  { text: 'รหัสแผนก', value: 'department_id' },
-  { text: 'สถานะ', value: 'active' },
-  { text: 'จัดการ', value: 'actions', sortable: false },
+  { title: 'ลำดับ', key: 'index' },
+  { title: 'ชื่อผู้ใช้', key: 'name' },
+  { title: 'อีเมล', key: 'email' },
+  { title: 'ตำแหน่ง', key: 'role' },
+  { title: 'แผนก', key: 'department_id' },
+  { title: 'กลุ่ม', key: 'group_id' },
+  { title: 'สถานะ', key: 'active' },
+  { title: 'คะแนน', key: 'score' },
+  { title: 'การประเมิน', key: 'action' },
+  { title: 'รายละเอียด', key: 'detail' }
 ]
 
-// <!-- ✅ ฟังก์ชันดึงข้อมูลจากฐานข้อมูล -->
+/* ✅ ดึงข้อมูลเดียวกับตารางแรก */
 const fetchUsers = async () => {
   loading.value = true
   try {
-    const res = await axios.get('http://localhost:7000/api/auth/users')
+    const res = await axios.get(
+      'http://localhost:7000/api/admin/userlist'
+    )
 
-    console.log('API RESPONSE:', res.data) // ✅ ใช้เช็กกรณีมีปัญหา
-
-    users.value = res.data.data.map(user => ({
-      ...user,
-      active: user.active === 1 ? 'ใช้งาน' : 'ปิดใช้งาน'
+    users.value = res.data.map(u => ({
+      id: u.id,
+      name: u.name,
+      email: u.email,
+      role: u.role,
+      department_id: u.department_id,
+      group_id: u.group_id,
+      active: u.active,
+      score: 0 // backend ยังไม่ส่ง → ใส่ไว้ก่อน
     }))
+
+    totalScore.value = users.value.reduce(
+      (sum, u) => sum + u.score,
+      0
+    )
   } catch (err) {
-    console.error('Error fetching users:', err)
+    console.error('โหลดข้อมูลไม่สำเร็จ', err)
   } finally {
     loading.value = false
   }
 }
 
-const editUser = (user) => {
-  alert(`แก้ไขผู้ใช้: ${user.name}`)
+/* นำทาง */
+const goToProgress = (userId) => {
+  router.push({ path: '/Assessor/topicass', query: { userId } })
 }
 
-const deleteUser = async (id) => {
-  if (!confirm('คุณต้องการลบผู้ใช้นี้หรือไม่?')) return
-
-  try {
-    await axios.delete(`http://localhost:7000/api/auth/users/${id}`)
-    fetchUsers() 
-  } catch (err) {
-    console.error('Error deleting user:', err)
-  }
+const goToDetail = (userId) => {
+  router.push({ path: '/Assessor/userdetail', query: { userId } })
 }
 
 onMounted(fetchUsers)
 </script>
-
-<style scoped>
-.v-data-table {
-  margin-top: 20px;
-}
-</style>

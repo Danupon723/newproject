@@ -2,15 +2,13 @@
   <v-container fluid>
     <h2 class="mb-4">แดชบอร์ดผู้รับการประเมิน</h2>
 
-    <!-- ✅ สรุปด้านบน -->
+    <!-- ✅ การ์ดสรุปด้านบน -->
     <v-row>
       <v-col cols="12" md="4">
         <v-card color="blue-lighten-4">
           <v-card-text>
             <div class="text-h6">สถานะการประเมิน</div>
-            <div class="text-h5 font-weight-bold">
-              {{ status }}
-            </div>
+            <div class="text-h5 font-weight-bold">{{ status }}</div>
           </v-card-text>
         </v-card>
       </v-col>
@@ -19,9 +17,7 @@
         <v-card color="green-lighten-4">
           <v-card-text>
             <div class="text-h6">คะแนนรวม</div>
-            <div class="text-h4 font-weight-bold">
-              {{ totalScore }}
-            </div>
+            <div class="text-h4 font-weight-bold">{{ totalScore }}</div>
           </v-card-text>
         </v-card>
       </v-col>
@@ -31,7 +27,7 @@
           <v-card-text>
             <div class="text-h6">ผู้รับการประเมินทั้งหมด</div>
             <div class="text-h4 font-weight-bold">
-              {{ indicators }}
+              {{ users.length }}
             </div>
           </v-card-text>
         </v-card>
@@ -40,33 +36,46 @@
 
     <br />
 
-    <!-- ✅ ตารางความคืบหน้า -->
+    <!-- ✅ ตารางชื่อผู้ใช้ -->
     <v-card>
       <v-data-table
         :headers="headers"
-        :items="topics"
+        :items="users"
         :loading="loading"
         item-value="id"
       >
         <template #top>
           <v-toolbar flat>
-            <v-toolbar-title class="text-center text-primary">รายชื่อผู้รับการประเมิน</v-toolbar-title>
+            <v-toolbar-title class="text-primary">
+              รายชื่อผู้รับการประเมิน
+            </v-toolbar-title>
           </v-toolbar>
         </template>
 
-        <!-- ✅ progress -->
-        <template #item.self_score="{ item }">
+        <!-- ลำดับ -->
+        <template #item.index="{ index }">
+          {{ index + 1 }}
+        </template>
+
+        <!-- สถานะ -->
+        <template #item.active="{ item }">
           <v-chip
-            color="green"
+            :color="item.active === 'ใช้งาน' ? 'green' : 'red'"
             text-color="white"
-            variant="flat"
+            size="small"
           >
-            {{ item.self_score ?? '-' }}
+            {{ item.active }}
           </v-chip>
         </template>
 
+        <!-- คะแนน -->
+        <template #item.score="{ item }">
+          <v-chip color="green" text-color="white" variant="flat">
+            {{ item.score }}
+          </v-chip>
+        </template>
 
-        <!-- ✅ ปุ่มดูความคืบหน้า -->
+        <!-- ✅ ปุ่ม (ไม่แตะตามที่ขอ) -->
         <template #item.action="{ item }">
           <v-btn
             color="info"
@@ -74,19 +83,20 @@
             prepend-icon="mdi-chart-line"
             @click="goToProgress(item.id)"
           >
-            ประเมิน                                                  
+            ประเมิน
           </v-btn>
         </template>
+
         <template #item.detail="{ item }">
-        <v-btn
-          color="secondary"
-          size="small"
-          prepend-icon="mdi-file-document-outline"
-          @click="goToDetail(item.id)"
-        >
-          รายละเอียด
-        </v-btn>
-      </template>
+          <v-btn
+            color="secondary"
+            size="small"
+            prepend-icon="mdi-file-document-outline"
+            @click="goToDetail(item.id)"
+          >
+            รายละเอียด
+          </v-btn>
+        </template>
       </v-data-table>
     </v-card>
   </v-container>
@@ -97,43 +107,51 @@ import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import axios from 'axios'
 
-/* ✅ router */
 const router = useRouter()
 
-/* ✅ state */
+/* state */
 const status = ref('กำลังประเมิน')
 const totalScore = ref(0)
-const indicators = ref(0)
-const topics = ref([])
+const users = ref([])
 const loading = ref(false)
 
-/* ✅ headers ตาราง */
+/* ✅ headers (อ้างอิงตารางแรก) */
 const headers = [
-  { title: 'ลำดับ', key: 'id' },
-  { title: 'หัวข้อการประเมิน', key: 'name' },
-  { title: 'ปีที่เริ่ม', key: 'buddhist_year' },
-  { title: 'วันที่เริ่ม', key: 'start_date' },
-  { title: 'วันที่จบ', key: 'end_date' },
-  { title: 'คะแนนประเมินตนเอง', key: 'self_score' },
-  { title: 'การทำรายการ', key: 'action' },
-  { title: 'รายละเอียด', key: 'detail' } 
+  { title: 'ลำดับ', key: 'index' },
+  { title: 'ชื่อผู้ใช้', key: 'name' },
+  { title: 'อีเมล', key: 'email' },
+  { title: 'ตำแหน่ง', key: 'role' },
+  { title: 'แผนก', key: 'department_id' },
+  { title: 'กลุ่ม', key: 'group_id' },
+  { title: 'สถานะ', key: 'active' },
+  { title: 'คะแนน', key: 'score' },
+  { title: 'การประเมิน', key: 'action' },
+  { title: 'รายละเอียด', key: 'detail' }
 ]
 
-/* ✅ ดึงข้อมูลหัวข้อประเมิน */
-const fetchTopics = async () => {
+/* ✅ ดึงข้อมูลเดียวกับตารางแรก */
+const fetchUsers = async () => {
   loading.value = true
   try {
     const res = await axios.get(
-      'http://localhost:7000/api/admin/periodslist'
+      'http://localhost:7000/api/admin/userlist'
     )
 
-    topics.value = res.data.map((item, index) => ({
-      ...item,
-      progress: item.progress ?? 0 ,
-      self_score: item.self_score ?? 0
+    users.value = res.data.map(u => ({
+      id: u.id,
+      name: u.name,
+      email: u.email,
+      role: u.role,
+      department_id: u.department_id,
+      group_id: u.group_id,
+      active: u.active,
+      score: 0 // backend ยังไม่ส่ง → ใส่ไว้ก่อน
     }))
 
-    indicators.value = topics.value.length
+    totalScore.value = users.value.reduce(
+      (sum, u) => sum + u.score,
+      0
+    )
   } catch (err) {
     console.error('โหลดข้อมูลไม่สำเร็จ', err)
   } finally {
@@ -141,20 +159,14 @@ const fetchTopics = async () => {
   }
 }
 
-/* ✅ ไปหน้าดูความคืบหน้า */
-const goToProgress = (periodId) => {
-  router.push({
-    path: '/Assessor/topicass',
-    query: { periodId }
-  })
+/* นำทาง */
+const goToProgress = (userId) => {
+  router.push({ path: '/Assessor/topicass', query: { userId } })
 }
 
-const goToDetail = (periodId) => {
-  router.push({
-    path: '/Assessor/topicass',
-    query: { periodId }
-  })
+const goToDetail = (userId) => {
+  router.push({ path: '/Assessor/topicass', query: { userId } })
 }
 
-onMounted(fetchTopics)
+onMounted(fetchUsers)
 </script>
