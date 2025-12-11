@@ -10,7 +10,7 @@
     <!-- Sidebar -->
     <v-navigation-drawer app permanent>
       <v-list>
-        <v-list-item link to="/admin/dashboard">
+        <v-list-item link to="/Assessor/dashboard">
           <v-list-item-title>Dashboard</v-list-item-title>
         </v-list-item>
         <v-list-item link to="/admin/users">

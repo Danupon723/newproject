@@ -2,17 +2,25 @@ import { createRouter, createWebHistory } from 'vue-router'
 import Login from './view/login.vue'
 import Register from './view/register.vue'
 
+//ส่วนของadmin
 import AdminLayout from "./layouts/AdminLayout.vue"
 import adminDashboard from "../src/view/admin/dashbard.vue"
 import adminusers from "../src/view/admin/users.vue"
 import topic from './view/admin/topic.vue'
+import Subtopic from './view/admin/Subtopic.vue'
+//ส่วนจัดการข้อมูล
 import edittopic from './manage/edittopic.vue'
-import dashbord from './view/user/dashbord.vue'
 import userlayout from './layouts/userlayout.vue'
+import adduser from './manage/adduser.vue'
+
+
+//ส่วนผู้รับการประเมิน
+import dashbord from './view/user/dashbord.vue'
+
+
+//ส่วนของผู้ประเมิน
 import Assessorlayout from './layouts/Assessorlayout.vue'
 import assessordashbord from './view/Assessor/dashbord.vue'
-import Subtopic from './view/admin/Subtopic.vue'
-import adduser from './manage/adduser.vue'
 import addmaintopic from './manage/addmaintopic.vue'
 import addtopic from './manage/addtopic.vue'
 import addevalua from './manage/addevalua.vue'
@@ -27,6 +35,8 @@ import addtopic2 from './manage/addtopic2.vue'
 import test from './view/test.vue'
 import estimate from './view/user/estimate.vue'
 import comment from './view/user/comment.vue'
+import details from './view/Assessor/details.vue'
+
 import { components } from 'vuetify/dist/vuetify.js'
 const routes = [
   { path: '/', name : Login,  component: Login },
@@ -74,9 +84,10 @@ const routes = [
     component : Assessorlayout , 
     
     children:[
-         { path: '', redirect: '/assessor/dashboard' },
+         { path: '', redirect: '/Assessor/dashboard' },
          { path: "dashboard", component: assessordashbord },
-    ] , 
+         {path:'details' , component:details},
+    ] ,  
      meta: { requiresAuth: true}
   } , 
 ]
