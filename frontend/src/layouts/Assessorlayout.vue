@@ -13,10 +13,10 @@
         <v-list-item link to="/Assessor/dashboard">
           <v-list-item-title>Dashboard</v-list-item-title>
         </v-list-item>
-        <v-list-item link to="/admin/users">
+        <v-list-item link to="/Assessor/user">
           <v-list-item-title>Users</v-list-item-title>
         </v-list-item>
-        <v-list-item link to="/admin/topic">
+        <v-list-item link to="/Assessor/topic">
           <v-list-item-title>topic</v-list-item-title>
         </v-list-item>
         <v-list-item @click="logout()" >

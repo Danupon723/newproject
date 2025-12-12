@@ -73,7 +73,7 @@
             prepend-icon="mdi-chart-line"
             @click="goToProgress(item.id)"
           >
-            ดูรายละเอียดเพิ่มเติม
+            ดูความคืบหน้า
           </v-btn>
         </template>
       </v-data-table>

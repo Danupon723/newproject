@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import Login from './view/login.vue'
 import Register from './view/register.vue'
+import test from './view/test.vue' //ทดลองหน้า
 
 //ส่วนของadmin
 import AdminLayout from "./layouts/AdminLayout.vue"
@@ -8,35 +9,34 @@ import adminDashboard from "../src/view/admin/dashbard.vue"
 import adminusers from "../src/view/admin/users.vue"
 import topic from './view/admin/topic.vue'
 import Subtopic from './view/admin/Subtopic.vue'
+import evaluatorrole from './view/admin/evaluatorrole.vue'
+import Indicator from './view/admin/Indicator.vue'
 //ส่วนจัดการข้อมูล
 import edittopic from './manage/edittopic.vue'
 import userlayout from './layouts/userlayout.vue'
 import adduser from './manage/adduser.vue'
-
-
-//ส่วนผู้รับการประเมิน
-import dashbord from './view/user/dashbord.vue'
-
-
-//ส่วนของผู้ประเมิน
-import Assessorlayout from './layouts/Assessorlayout.vue'
-import assessordashbord from './view/Assessor/dashbord.vue'
 import addmaintopic from './manage/addmaintopic.vue'
 import addtopic from './manage/addtopic.vue'
 import addevalua from './manage/addevalua.vue'
 import edituser from './manage/edituser.vue'
 import addsubtopic from './manage/addsubtopic.vue'
-import profile from './view/user/profile.vue'
-import evaluatorrole from './view/admin/evaluatorrole.vue'
 import addvaluator from './manage/addevaluatorrole.vue'
-import evaluate from './view/user/evaluate.vue'
-import Indicator from './view/admin/Indicator.vue'
 import addtopic2 from './manage/addtopic2.vue'
-import test from './view/test.vue'
+
+//ส่วนผู้รับการประเมิน
+import dashbord from './view/user/dashbord.vue'
+import profile from './view/user/profile.vue'
+import evaluate from './view/user/evaluate.vue'
 import estimate from './view/user/estimate.vue'
 import comment from './view/user/comment.vue'
-import details from './view/Assessor/details.vue'
 
+
+//ส่วนของผู้ประเมิน
+import Assessorlayout from './layouts/Assessorlayout.vue'
+import assessordashbord from './view/Assessor/dashbord.vue'
+import details from './view/Assessor/details.vue'
+import subtopic from './view/Assessor/Subtopic.vue'
+import userassessor from './view/Assessor/user.vue'
 import { components } from 'vuetify/dist/vuetify.js'
 const routes = [
   { path: '/', name : Login,  component: Login },
@@ -87,6 +87,7 @@ const routes = [
          { path: '', redirect: '/Assessor/dashboard' },
          { path: "dashboard", component: assessordashbord },
          {path:'details' , component:details},
+         {path:'user' , component:userassessor}
     ] ,  
      meta: { requiresAuth: true}
   } , 

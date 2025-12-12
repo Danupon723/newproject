@@ -1,89 +1,136 @@
 <template>
-  <v-container>
-    <v-card class="pa-4">
-      <h2>ฟอร์มประเมินผู้ถูกประเมิน</h2>
+  <v-container class="d-flex justify-center align-center" style="height: 80vh;">
+    <v-card width="520" class="pa-6">
+      <h2 class="text-center mb-6">ประเมินผู้รับการประเมิน</h2>
 
-      <div v-for="sub in subtopics" :key="sub.id" class="mb-6">
-        <h3>{{ sub.name }}</h3>
-        <p>{{ sub.description }}</p>
+      <!-- เลือกหัวข้อประเมิน -->
+      <v-select
+        v-model="maintopic"
+        :items="maintopic"
+        item-title="name"
+        item-value="id"
+        label="เลือกหัวข้อประเมิน"
+        dense
+        @change="loadSubTopics"
+      ></v-select>
 
-        <!-- Score 1-4 -->
-        <v-select
-          v-if="sub.type === 'score_1_4'"
-          :items="[1,2,3,4]"
-          label="คะแนน 1-4"
-          v-model="answers[sub.id].score"
-        />
+      <!-- เลือกหัวข้อย่อย -->
+      <v-select
+        v-model="selectedSub"
+        :items="subTopicList"
+        item-title="name"
+        item-value="id"
+        label="เลือกหัวข้อย่อย"
+        dense
+        :disabled="!selectedTopic"
+      ></v-select>
 
-        <!-- Yes / No -->
-        <v-select
-          v-if="sub.type === 'yes_no'"
-          :items="['Yes','No']"
-          label="Yes / No"
-          v-model="answers[sub.id].yes_no"
-        />
+      <!-- เลือกชื่อผู้รับการประเมิน -->
+      <v-select
+        v-model="selectedUser"
+        :items="userList"
+        item-title="fullName"
+        item-value="id"
+        label="เลือกผู้รับการประเมิน"
+        dense
+      ></v-select>
 
-        <!-- File upload -->
-        <v-file-input
-          v-if="sub.type === 'file_url'"
-          label="อัปโหลดไฟล์"
-          v-model="answers[sub.id].file_url"
-        />
-      </div>
+      <!-- Dropdown เลือก มี/ไม่มี -->
+      <v-select
+        v-model="hasOption"
+        :items="yesNoOptions"
+        label="เลือกมี/ไม่มี"
+        dense
+      ></v-select>
 
-      <v-btn color="primary" @click="submitEvaluation">
-        บันทึกการประเมิน
-      </v-btn>
+      <!-- Dropdown เลือก 1-4 -->
+      <v-select
+        v-if="hasOption === true"
+        v-model="selectedNumber"
+        :items="[1,2,3,4]"
+        label="เลือกตัวเลข"
+        dense
+        color="primary"
+      ></v-select>
+
+      <v-select
+        v-else
+        :items="[1,2,3,4]"
+        label="เลือกตัวเลข"
+        dense
+        disabled
+        class="grey lighten-2"
+      ></v-select>
     </v-card>
   </v-container>
 </template>
+<script>
+import axios from "axios";
 
-<script setup>
-import { ref, onMounted } from 'vue'
-import axios from 'axios'
+export default {
+  data() {
+    return {
+      /* Dropdown มี/ไม่มี */
+      hasOption: null,
+      selectedNumber: null,
+      yesNoOptions: [
+        { text: "มี", value: true },
+        { text: "ไม่มี", value: false },
+      ],
 
-const subtopics = ref([])
-const answers = ref({})
+      /* Topic */
+      topicList: [],
+      selectedTopic: null,
 
-const fetchSubtopics = async () => {
-  try {
-    const res = await axios.get('http://localhost:7000/api/evaluatee/subtopics')
-    subtopics.value = res.data
+      /* Sub Topic */
+      subTopicList: [],
+      selectedSub: null,
 
-    // สร้าง object answers เริ่มต้นตาม type
-    res.data.forEach(sub => {
-      answers.value[sub.id] = {
-        score: sub.type === 'score_1_4' ? null : undefined,
-        yes_no: sub.type === 'yes_no' ? null : undefined,
-        file_url: sub.type === 'file_url' ? null : undefined
+      /* User List */
+      userList: [],
+      selectedUser: null,
+    };
+  },
+
+  created() {
+    this.loadTopics();
+    this.loadUsers();
+  },
+
+  methods: {
+    /* โหลดหัวข้อ */
+    async loadTopics() {
+      try {
+        const res = await axios.get("http://localhost:7000/api/admin/topiclist");
+         this.topicList = res.data.map(item => item.topicName);
+      } catch (e) {
+        console.error("โหลดหัวข้อไม่สำเร็จ", e);
       }
-    })
-  } catch (err) {
-    console.error('โหลดหัวข้อย่อยไม่สำเร็จ', err)
-  }
-}
+    },
 
-const submitEvaluation = async () => {
-  try {
-    console.log('ข้อมูลที่จะส่ง:', answers.value)
+    /* โหลดหัวข้อย่อยเมื่อเลือกหัวข้อ */
+    async loadSubTopics() {
+      if (!this.selectedTopic) return;
 
-    // สร้าง FormData ถ้ามีไฟล์
-    const formData = new FormData()
-    Object.entries(answers.value).forEach(([subId, ans]) => {
-      if (ans.score !== undefined) formData.append(`answers[${subId}][score]`, ans.score)
-      if (ans.yes_no !== undefined) formData.append(`answers[${subId}][yes_no]`, ans.yes_no)
-      if (ans.file_url) formData.append(`answers[${subId}][file_url]`, ans.file_url)
-    })
+      try {
+        const res = await axios.get(
+          `http://localhost:7000/api/subtopics/${this.selectedTopic}`
+        );
+        this.subTopicList = res.data;
+      } catch (e) {
+        console.error("โหลดหัวข้อย่อยไม่สำเร็จ", e);
+      }
+    },
 
-    await axios.post('http://localhost:7000/api/evaluatee/submit', formData, {
-      headers: { 'Content-Type': 'multipart/form-data' }
-    })
-
-    alert('บันทึกเรียบร้อย!')
-  } catch (err) {
-    console.error('บันทึกไม่สำเร็จ', err)
-  }
-}
-
-onMounted(fetchSubtopics)
+    /* โหลดรายชื่อผู้รับการประเมิน */
+    async loadUsers() {
+      try {
+        const res = await axios.get("http://localhost:7000/api/admin/userslist");
+        this.userList = res.data;
+      } catch (e) {
+        console.error("โหลดรายชื่อไม่สำเร็จ", e);
+      }
+    },
+  },
+};
 </script>

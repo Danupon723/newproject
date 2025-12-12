@@ -1,5 +1,5 @@
 <template>
-  <v-container class="login-page d-flex justify-center align-center" style="height: 100vh;">
+  <v-container class="  -page d-flex justify-center align-center" style="height: 100vh;">
     <v-card width="420" class="pa-6">
       <v-card-title class="text-h5 text-center mb-4">
         🔐 Login
@@ -14,7 +14,6 @@
       variant="outlined"
       class="mb-3"
       prepend-inner-icon="mdi-email"
-      autocomplete="current-password"
     />
 
     <v-text-field
@@ -24,7 +23,6 @@
       variant="outlined"
       class="mb-3"
       prepend-inner-icon="mdi-lock"
-      autocomplete="current-password"
     />
 
     <v-btn
@@ -89,7 +87,4 @@ const payload = {
 
 </script>
 
-<style>
-
-</style>
 

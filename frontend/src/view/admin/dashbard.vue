@@ -108,43 +108,6 @@
         </v-form>
       </v-card>
     </v-dialog>
-
-    <!-- ✅ Popup แก้ไขผู้ใช้ -->
-    <v-dialog v-model="editDialog" max-width="500px">
-      <v-card class="pa-6">
-        <h2 class="text-h5 mb-4">แก้ไขข้อมูลผู้ใช้</h2>
-        <v-form @submit.prevent="updateUser">
-          <v-text-field v-model="editUserData.email" label="อีเมล" />
-          <v-text-field v-model="editUserData.name" label="ชื่อ" />
-          <v-select
-            v-model="editUserData.role"
-            :items="role"
-            item-title="name"
-            item-value="id"
-            label="ตำแหน่ง"
-          />
-          <v-select
-            v-model="editUserData.department_id"
-            :items="departments"
-            item-title="name"
-            item-value="id"
-            label="แผนก"
-          />
-          <v-select
-            v-model="editUserData.group_id"
-            :items="groups"
-            item-title="name"
-            item-value="id"
-            label="กลุ่ม"
-          />
-          <v-card-actions>
-            <v-spacer />
-            <v-btn color="grey" @click="editDialog = false">ยกเลิก</v-btn>
-            <v-btn color="primary" @click="updateUser">บันทึก</v-btn>
-          </v-card-actions>
-        </v-form>
-      </v-card>
-    </v-dialog>
   </v-container>
 </template>
 
@@ -156,8 +119,8 @@ const users = ref([])
 const loading = ref(false)
 const departments = ref([])
 const groups = ref([])
-const roles = ref([])
-const role = ['admin', 'evaluatee', 'evaluator']
+const roles = ref(['admin', 'evaluatee', 'evaluator'])
+const role = []
 
 const addDialog = ref(false)
 const editDialog = ref(false)
@@ -182,7 +145,6 @@ const headers = [
   { title: 'แผนก', key: 'daprt_name' },
   { title: 'กลุ่ม', key: 'group_name' },
   { title: 'สถานะ', key: 'active' },
-  { title: 'จัดการ', key: 'actions', sortable: false }
 ]
 
 // โหลดข้อมูลผู้ใช้
